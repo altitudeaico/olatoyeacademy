@@ -2,7 +2,7 @@
 
 *A queryable "board of advisors" for running Olatoye Academy. Reference the scholars we trust, ask what their approach would be, and pressure-test our decisions against the evidence — so we build on principle, not on whoever is loudest online.*
 
-**Christ at the Centre.**
+**Kristi L'aarin — Didara Ninu Gbogbo Nkan (Kristi L'aarin — Didara Ninu Gbogbo Nkan (Christ at the Centre — Excellence in All Things) — Excellence in All Things).**
 
 ---
 
