@@ -151,6 +151,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .dot-gn{background:var(--green)} .dot-a{background:var(--amber)} .dot-r{background:var(--red)}
 ::-webkit-scrollbar{width:0;height:0}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -1115,24 +1116,18 @@ function togglePS(id){
 }
 
 function quickPT(question, scholarIds){
-  // Pre-select scholars
   selSch.clear();
   scholarIds.split(',').forEach(id => selSch.add(id.trim()));
-  // Navigate to scholars tab
-  const btns = document.querySelectorAll('#view-library .sb');
-  btns.forEach(b=>b.classList.remove('active'));
-  // find scholars button
-  btns.forEach(b=>{ if(b.getAttribute('onclick') && b.getAttribute('onclick').includes('scholars')) b.classList.add('active'); });
-  drawLib('scholars');
-  // Pre-fill question
+  nav('library');
   setTimeout(()=>{
-    const sq = document.getElementById('sq');
-    const ptbox = document.getElementById('pt-box');
-    if(sq) sq.value = question;
-    drawSch();
-    // Auto-run
-    runPT();
-  }, 100);
+    drawLib('scholars');
+    setTimeout(()=>{
+      const sq=document.getElementById('sq');
+      if(sq){ sq.value=question; }
+      drawSch();
+      runPT();
+    },80);
+  },80);
 }
 
 function drawSch(){
@@ -1354,12 +1349,7 @@ function drawLog(tab){
 
 function navToProspectus(){
   nav('library');
-  setTimeout(()=>{
-    const btns=document.querySelectorAll('#view-library .sb');
-    btns.forEach(b=>b.classList.remove('active'));
-    btns[btns.length-1].classList.add('active');
-    drawLib('prospectus');
-  },80);
+  setTimeout(()=>{ drawLib('prospectus'); },80);
 }
 
 function saveLog(){
