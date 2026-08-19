@@ -576,11 +576,11 @@ function searchCorpus(query){
 
 // ── GROQ API (free tier, llama-3.1-8b-instant) ──
 // Replace with your Groq API key from console.groq.com (free, no credit card)
-const GROQ_KEY = 'YOUR_GROQ_API_KEY';
+const GROQ_KEY = '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';
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 async function callGroq(prompt, maxTokens=800){
-  if(GROQ_KEY === 'YOUR_GROQ_API_KEY'){
+  if(!GROQ_KEY || GROQ_KEY === ''){
     return '⚠️ Add your free Groq API key to enable AI pressure-tests.\n\nGet one free at console.groq.com (no credit card needed) — takes 2 minutes.\n\nPaste your key into the GROQ_KEY variable in index.html.';
   }
   const r = await fetch(GROQ_URL, {
