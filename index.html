@@ -279,9 +279,323 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </div>
 
 <script>
-// ── CONFIG ──
-// Replace this URL with your Cloudflare Worker URL after deploying worker.js
-// See worker.js for full deploy instructions (2 minutes, free)
+
+// ── CORPUS — 30 scholar lenses baked in (no server needed) ──
+const CORPUS = [
+  {id:'bloom',name:'Benjamin Bloom',domain:'Learning Science',strength:'STRONG',era:'1913-1999',
+   frameworks:['Mastery Learning','2 Sigma Problem'],
+   tags:['mastery','tutoring','feedback','one-to-one','acceleration'],
+   core:'One-to-one tutoring with mastery learning dramatically lifts learners above classroom-taught peers.',
+   endorses:'Our tutoring-led, mastery-based model IS the intervention Bloom championed. Do not advance until a concept is genuinely secure. Frequent low-stakes checks for understanding.',
+   cautions:'The exact 2-sigma figure does not replicate. Realistic one-to-one effect is d≈0.79, not 2.0. Do not promise miracle-sized gains.',
+   elsie:'Set mastery gates per topic — she does not move to the next objective until the current one is secure.',
+   emma:'Keep steps tiny and success frequent. Mastery at her stage means a skill is playful and automatic.',
+   evidence:'STRONG — the mastery+feedback mechanism is well supported across decades of research.'},
+  {id:'ericsson',name:'Anders Ericsson',domain:'Learning Science',strength:'STRONG',era:'1947-2020',
+   frameworks:['Deliberate Practice'],
+   tags:['practice','deliberate','expertise','10000-hours','feedback','reps'],
+   core:'Expertise comes from deliberate practice — focused, feedback-rich effort at the edge of ability — not from clocked hours.',
+   endorses:'Point every practice session at a named weakness with immediate correction. Quality and design of practice over raw quantity.',
+   cautions:'He rejected the "10,000 hours rule" entirely — Gladwell popularised it, Ericsson disowned it. Hours are not the target; deliberate design is.',
+   elsie:'Each practice block names its target today. Immediate correction, not just completion.',
+   emma:'Short, focused, feedback-rich bursts. Stop while she is still succeeding.',
+   evidence:'STRONG for deliberate practice. The 10,000-hour rule is a MYTH.'},
+  {id:'retrieval',name:'Retrieval Practice & Spacing',domain:'Learning Science',strength:'STRONG',era:'1885-present',
+   frameworks:['Testing Effect','Spacing Effect','Interleaving'],
+   tags:['retrieval','memory','spacing','interleaving','narration','flashcards','cramming'],
+   core:'Recalling information (self-testing) and spacing study over time produces far stronger long-term memory than rereading.',
+   endorses:'Daily low-stakes recall — narration, flashcards, quick quizzing. Deliberately revisit old material on a schedule. Charlotte Mason's narration is retrieval practice a century early.',
+   cautions:'Rereading and highlighting feel productive but create an illusion of competence. Do not mistake fluency-while-looking for knowing.',
+   elsie:'End each topic with narration (tell me what you learned). Revisit last week's material in a short Monday recall.',
+   emma:'Playful recall games — naming things, retelling stories — spaced across days.',
+   evidence:'STRONG — among the most replicated findings in all of learning science.'},
+  {id:'phonics',name:'Systematic Phonics',domain:'Learning Science',strength:'MODERATE',era:'2000-present',
+   frameworks:['Systematic Synthetic Phonics','Science of Reading'],
+   tags:['reading','phonics','literacy','early years','decoding'],
+   core:'Explicitly and systematically teaching letter-sound relationships is the evidence-based route into reading.',
+   endorses:'Systematic phonics for Emma inside a book-rich home. Wide reading for Elsie. Pairs naturally with Mason's living books.',
+   cautions:'Phonics alone is not the whole of reading — comprehension and vocabulary matter. A credible dissent (Bowers 2020) argues its superiority over other structured methods is overstated.',
+   elsie:'Past phonics — focus shifts to comprehension, inference and vocabulary.',
+   emma:'Systematic phonics as the spine of early reading, surrounded by being read to from rich books daily.',
+   evidence:'MODERATE — UK legal standard since 2007. Superiority over other structured methods is contested.'},
+  {id:'acceleration',name:'Acceleration vs Hothousing',domain:'Learning Science',strength:'STRONG',era:'1987-present',
+   frameworks:['Academic Acceleration','Hothousing (caution)'],
+   tags:['acceleration','ahead','hothousing','pressure','wellbeing','anxiety','girls','two years ahead'],
+   core:'Accelerating a ready, willing child is safe and effective. Pushing knowledge earlier than developmentally typical (hothousing) is the documented harm.',
+   endorses:'Let a child who is cruising and eager accelerate in her strong subjects. This is the safe route to two years ahead.',
+   cautions:'THE key caution of the whole programme. Forcing pace to hit a benchmark — especially with a young child — is hothousing. Two-years-ahead is a target for provision and pace, never pressure on the child.',
+   elsie:'Accelerate where she is ready and willing. Watch for eagerness as the green light, anxiety as the stop signal.',
+   emma:'Highest hothousing risk at age 4. Keep advancement play-based and pressure-free.',
+   evidence:'STRONG on both sides. Acceleration benefits are robust (Vanderbilt SMPY, 35-year study). Hothousing risks are well-described.'},
+  {id:'dweck',name:'Carol Dweck',domain:'Mindset & Motivation',strength:'CONTESTED',era:'b.1946',
+   frameworks:['Growth Mindset'],
+   tags:['mindset','growth','fixed','praise','effort','clever','ability'],
+   core:'Believing ability can grow through effort and strategy shapes how a child faces difficulty.',
+   endorses:'Praise process, effort and strategy rather than fixed traits. Frame ability as improvable so children approach challenge rather than avoid it.',
+   cautions:'In the best studies the effect on achievement is near zero (d≈0.02). Do not treat it as a lever on attainment or lean on posters and slogans.',
+   elsie:'Praise her strategy and persistence, not her cleverness.',
+   emma:'Celebrate effort and "not yet". Keep it warm and genuine.',
+   evidence:'CONTESTED. Best meta-analysis (Macnamara & Burgoyne 2023): overall d≈0.05, d≈0.02 in highest-quality studies. Use as light framing, never a pillar.'},
+  {id:'duckworth',name:'Angela Duckworth',domain:'Mindset & Motivation',strength:'CONTESTED',era:'b.1970',
+   frameworks:['Grit'],
+   tags:['grit','perseverance','passion','resilience','conscientiousness','follow-through'],
+   core:'Grit — passion plus perseverance for long-term goals — is proposed as a driver of achievement.',
+   endorses:'Train follow-through and perseverance of effort as ordinary conscientiousness.',
+   cautions:'Largely redundant with conscientiousness (Credé 2017). Only perseverance of effort carries weight, not consistency of interests. Do not treat grit as a special new trait.',
+   elsie:'Build follow-through — finish what she starts, stay with hard tasks past the frustration point.',
+   emma:'Too young for grit framing. Build persistence through play she enjoys.',
+   evidence:'CONTESTED. Oversold. Real but largely redundant with conscientiousness.'},
+  {id:'sdt',name:'Self-Determination Theory',domain:'Mindset & Motivation',strength:'STRONG',era:'1985-present',
+   frameworks:['Autonomy-Competence-Relatedness','Intrinsic Motivation'],
+   tags:['autonomy','motivation','intrinsic','warmth','relatedness','competence','pressure','rewards','controlling'],
+   core:'Intrinsic motivation and wellbeing flourish when three needs are met: autonomy, competence and relatedness.',
+   endorses:'Give real choices, pitch work at achievable challenge, keep the relationship warm. This is the engine beneath productive struggle.',
+   cautions:'Controlling tactics — heavy rewards, pressure, conditional approval — erode the very motivation we want. This is the counterweight to over-pushing.',
+   elsie:'Offer real choices within structure. Keep challenge achievable. Protect the warmth even when correcting.',
+   emma:'Maximise autonomy in play. Celebrate competence. Keep connection warm.',
+   evidence:'STRONG — the most robust, best-supported motivational framework, backed by decades of meta-analyses.'},
+  {id:'mason',name:'Charlotte Mason',domain:'Home Education',strength:'PHILOSOPHY',era:'1842-1923',
+   frameworks:['Living Books','Narration','Habit Training','Short Lessons','Atmosphere-Discipline-Life'],
+   tags:['living books','narration','habits','attention','nature','short lessons','home education'],
+   core:'Education is an atmosphere, a discipline, a life. The child is a born person to be fed rich ideas, not dry facts.',
+   endorses:'Living books over textbooks. Short lessons to build the habit of attention. Narration as retrieval. Deliberate habit training. Nature study.',
+   cautions:'Her method resists cramming and over-scheduling — a useful check on intensity.',
+   elsie:'Narration after readings. Keep lessons short. Feed her genuinely good books.',
+   emma:'Nature study, being read to from living books, gentle habit formation.',
+   evidence:'PHILOSOPHY — unusually well-aligned with modern replicated science.'},
+  {id:'montessori',name:'Maria Montessori',domain:'Home Education',strength:'MODERATE',era:'1870-1952',
+   frameworks:['Prepared Environment','Sensitive Periods','Practical Life'],
+   tags:['environment','prepared','child-led','independence','early years','hands-on','materials'],
+   core:'The environment itself teaches. Children learn through self-directed activity in a carefully prepared space.',
+   endorses:'A strong fit for Emma. Justifies intentionality about learning spaces.',
+   cautions:'Fidelity matters — benefits appear for high-fidelity implementations, not diluted setups.',
+   elsie:'Ordered environment, practical independence, concrete materials for new maths concepts.',
+   emma:'Core approach for early years. Prepared environment, real practical-life tasks, freedom within clear limits.',
+   evidence:'MODERATE — generally positive for high-fidelity implementations.'},
+  {id:'trivium',name:'Classical Trivium',domain:'Home Education',strength:'PHILOSOPHY',era:'1947-present',
+   frameworks:['Grammar Stage','Logic Stage','Rhetoric Stage'],
+   tags:['classical','grammar','logic','rhetoric','stages','long-range','expression','debate','public speaking'],
+   core:'Learning proceeds in three stages: grammar (facts), logic (reasoning), rhetoric (expression).',
+   endorses:'A long-range map for how depth should change as the girls grow. The rhetoric stage anchors the public speaking pathway.',
+   cautions:'Sayers wrote suggestively, not prescriptively. Rigid ages-and-stages reading is a modern overlay.',
+   elsie:'Grammar-into-logic stage now. Beginning to reason and argue — debate fits perfectly here.',
+   emma:'Grammar stage: rich absorption of facts, stories, songs, memory work.',
+   evidence:'PHILOSOPHY — a useful developmental lens, not an empirical claim.'},
+  {id:'vygotsky',name:'Lev Vygotsky',domain:'Child Development',strength:'STRONG',era:'1896-1934',
+   frameworks:['Zone of Proximal Development','Scaffolding','More Knowledgeable Other'],
+   tags:['zpd','scaffolding','zone of proximal development','tutoring','support','edge','stretch'],
+   core:'Children learn most in the gap between what they can do alone and what they can do with skilled help.',
+   endorses:'Teach just above independent level with support, then progressively withdraw support as competence grows. The most practical idea for a tutoring parent.',
+   cautions:'Support that never fades creates dependence. Too-hard-without-support creates failure. Calibrate the gap and the fade.',
+   elsie:'Find her edge, scaffold the next step, then deliberately withdraw help so she owns it.',
+   emma:'Gentle scaffolding in play. Do the next-hardest bit with her, then let her try alone.',
+   evidence:'STRONG — foundational and directly actionable in one-to-one teaching.'},
+  {id:'erikson',name:'Erik Erikson',domain:'Child Development',strength:'MODERATE',era:'1902-1994',
+   frameworks:['Psychosocial Stages','Industry vs Inferiority','Initiative vs Guilt'],
+   tags:['psychosocial','industry','inferiority','initiative','guilt','self-worth','competence','comparison'],
+   core:'Each life stage has a psychosocial task. Ages 4 and 9 have specific, different developmental needs.',
+   endorses:'Gives real developmental expectations. Elsie needs to feel competent — success at real tasks builds her worth.',
+   cautions:'For Elsie: harsh comparison or making her feel inadequate strikes exactly at her stage's vulnerability. For Emma: over-criticising her initiatives induces guilt.',
+   elsie:'Age 9 — Industry vs Inferiority. Give real tasks she can succeed at. Avoid harsh comparison.',
+   emma:'Age 4 — Initiative vs Guilt. Let her initiate and lead play. Guide without crushing her initiative.',
+   evidence:'MODERATE — influential framework, useful as a developmental lens.'},
+  {id:'attachment',name:'Attachment & Executive Function',domain:'Child Development',strength:'STRONG',era:'1950s-present',
+   frameworks:['Secure Base','Executive Function','Bowlby','Ainsworth'],
+   tags:['attachment','secure base','executive function','self-regulation','working memory','flexibility','warmth'],
+   core:'A secure relationship is the base from which children explore and learn. Executive function is trainable.',
+   endorses:'Leverage the close home-ed relationship as a natural secure base. Build executive function through movement, music and routines.',
+   cautions:'Stress and harsh pressure degrade executive function and undermine the secure base.',
+   elsie:'Use the secure relationship to let her take on hard challenges.',
+   emma:'Secure warmth first. Build EF through play, movement and simple self-regulation games.',
+   evidence:'STRONG — both attachment and EF development are well-established.'},
+  {id:'sel',name:'SEL / CASEL (Durlak)',domain:'Character & SEL',strength:'STRONG',era:'1994-present',
+   frameworks:['CASEL 5 Competencies','SAFE Criteria'],
+   tags:['sel','emotional intelligence','self-awareness','self-management','social','academic gain','emotions'],
+   core:'Explicitly teaching social-emotional skills improves both wellbeing and academic achievement.',
+   endorses:'Backs the Emotional Intelligence pillar with hard evidence. SEL and academics reinforce each other.',
+   cautions:'Effects depend on SAFE delivery — Sequenced, Active, Focused, Explicit. Vague "be kind" messaging does little.',
+   elsie:'Explicit, active, sequenced lessons in naming and managing emotions.',
+   emma:'Simple, active emotion-naming woven into daily life.',
+   evidence:'STRONG — Durlak (2011), 270,000+ students, found 11-percentile-point achievement gain.'},
+  {id:'gottman',name:'John Gottman',domain:'Character & SEL',strength:'STRONG',era:'b.1942',
+   frameworks:['Emotion Coaching','5 Steps'],
+   tags:['emotion coaching','emotions','validation','feelings','self-regulation','anger','anxiety','mental health'],
+   core:'Treating a child's emotion as a chance to connect and teach builds emotional intelligence.',
+   endorses:'Notice the emotion, see it as a chance to connect, listen and validate, help name the feeling, then set limits and problem-solve. Do this before correction.',
+   cautions:'Validation is not permissiveness. Skipping straight to limits misses the connection that makes it work.',
+   elsie:'Name and validate the feeling before problem-solving. Coach her through big emotions rather than dismissing them.',
+   emma:'Notice, name and validate her feelings. Then gently set limits.',
+   evidence:'STRONG — well-supported and practically trialled in UK school settings.'},
+  {id:'jubilee',name:'Jubilee Centre (Character Education)',domain:'Character & SEL',strength:'FRAMEWORK',era:'2012-present',
+   frameworks:['Neo-Aristotelian Virtues','Phronesis','Performance Virtues'],
+   tags:['character','virtues','confidence','public speaking','etiquette','poise','competence','practice'],
+   core:'Character is built through four types of virtue unified by practical wisdom (phronesis).',
+   endorses:'Confidence and poise come from genuine competence plus practice — not praise alone. Regular public speaking and performance inside warm relationships.',
+   cautions:'Character cannot be praised into existence or taught as slogans. It requires real practice and reflection over time.',
+   elsie:'Build confidence through genuine competence. Public speaking, performance, real responsibility.',
+   emma:'Habituate simple virtues through daily practice and gentle reflection.',
+   evidence:'FRAMEWORK — respected, research-informed model (University of Birmingham).'},
+  {id:'ers',name:'Ethnic-Racial Socialization',domain:'Heritage Identity',strength:'STRONG',era:'2006-present',
+   frameworks:['Cultural Socialization','ERS Research'],
+   tags:['heritage','yoruba','nigerian','culture','identity','protective','wellbeing','achievement','diaspora','minority'],
+   core:'Teaching heritage, pride, history and language strengthens identity and achievement — and buffers discrimination.',
+   endorses:'Actively teaching Yoruba and Nigerian heritage is PROTECTIVE for the girls' wellbeing and achievement. One of the best-evidenced elements of the whole programme.',
+   cautions:'Underinvesting in cultural socialization has a real cost. This is a genuine developmental need, not a nice-to-have.',
+   elsie:'Deliberate, ongoing teaching of Yoruba, Nigerian history and heritage, and family lineage.',
+   emma:'Daily heritage immersion — language, stories, customs, pride — from the earliest age.',
+   evidence:'STRONG — large, robust literature. Hughes et al. (2006); Wang et al. (2020) meta-analysis.'},
+  {id:'whitebread',name:'Whitebread & Bingham (Money Habits)',domain:'Financial Literacy',strength:'MODERATE',era:'2013',
+   frameworks:['Habits of Mind','Money Habits by Age 7'],
+   tags:['money','financial literacy','habits','self-regulation','enterprise','age 7','planning','saving'],
+   core:'Money habits largely form by age 7 — and it is habits of mind, not financial facts, that matter.',
+   endorses:'Teach money through real experience — budgeted shopping, save/spend/give jars, genuine choices. Not lectures.',
+   cautions:'Teaching explicit financial knowledge alone is largely ineffectual. For young children, self-regulation and delayed gratification are the real foundation.',
+   elsie:'Real money experiences with genuine choices — budgeting, save/spend/give, small enterprise.',
+   emma:'Self-regulation and delayed gratification through play and everyday moments.',
+   evidence:'MODERATE — Cambridge/Money Advice Service. The habits-over-facts nuance is the key, oft-omitted finding.'},
+  {id:'martial',name:'Martial Arts & Cognition',domain:'Physical',strength:'MODERATE',era:'2004-present',
+   frameworks:['Exercise-Cognition Link','Self-Regulation'],
+   tags:['martial arts','self-regulation','discipline','executive function','karate','taekwondo','focus','physical'],
+   core:'Martial arts training builds self-regulation, discipline and executive function beyond standard PE.',
+   endorses:'Credible, discipline- and focus-building choice with plausible self-regulation benefits. A healthy arena for learning to lose and recover.',
+   cautions:'Samples are modest and mostly non-randomised. Hold specific numbers lightly.',
+   elsie:'Martial arts for discipline, resilience and self-regulation. Safe place to lose, recover, try again.',
+   emma:'Lots of movement and active play first. Martial arts when developmentally ready.',
+   evidence:'MODERATE — promising but based on small studies. Adopt for the right reasons, not miracle claims.'},
+  {id:'music',name:'Music & Cognition',domain:'Music',strength:'MODERATE',era:'present',
+   frameworks:['Music Training','Executive Function','Suzuki','Kodaly'],
+   tags:['music','instrument','executive function','discipline','suzuki','kodaly','maths','IQ','far transfer'],
+   core:'Music training is linked to executive function — but does NOT reliably raise maths or IQ.',
+   endorses:'Justifies the Music pillar for the right reasons: focus, discipline, self-regulation and musicianship itself.',
+   cautions:'Do NOT justify music as "makes you smarter". Far-transfer to maths/IQ is effectively a myth (Sala & Gobet).',
+   elsie:'Formal tuition plus deliberate practice. Value the focus and discipline, not a promised maths boost.',
+   emma:'Playful early musicianship for joy, listening and self-regulation. Suzuki method fits well.',
+   evidence:'MODERATE for EF links. Music-to-maths/IQ far transfer is a MYTH.'},
+  {id:'godly_play',name:'Godly Play (Berryman)',domain:'Faith Formation',strength:'FRAMEWORK',era:'1990s-present',
+   frameworks:['Godly Play','Wondering Questions','Montessori-Based Faith'],
+   tags:['faith','christian','bible','wondering','storytelling','imagination','early years','spiritual'],
+   core:'A Montessori-based, storytelling-and-wondering approach to faith formation for ages 3-12.',
+   endorses:'Excellent for Emma's imaginative, sensory faith. Anchors the early-years side of the Faith pillar.',
+   cautions:'It is formational, not merely informational. Resist turning wondering into a quiz.',
+   elsie:'Wondering can still enrich her, but pair with catechism and the full biblical arc.',
+   emma:'Core approach: story + materials + open wondering questions. Imaginative encounter with scripture.',
+   evidence:'FRAMEWORK — well-regarded approach with qualitative support.'},
+  {id:'fowler',name:'Stages of Faith (Fowler & Westerhoff)',domain:'Faith Formation',strength:'FRAMEWORK',era:'1981-present',
+   frameworks:['Fowler Stages','Westerhoff Styles','Faith Development'],
+   tags:['faith','christian','stages','development','searching','owned faith','affiliative','devotion'],
+   core:'Faith develops through describable stages over a lifetime. Children are typically in experienced/affiliative stages.',
+   endorses:'Sets realistic expectations — children belong and experience faith before they own or question it.',
+   cautions:'Hold as descriptive theory, not prescription. Do not force a child toward owned faith prematurely.',
+   elsie:'Entering the searching phase is healthy — make room for honest why questions.',
+   emma:'Experienced/affiliative faith: belonging, story, ritual, warmth.',
+   evidence:'FRAMEWORK — respected but debated. Use as a lens, not a ladder.'},
+  {id:'catechism',name:'Catechesis & Scripture Memory',domain:'Faith Formation',strength:'FRAMEWORK',era:'historic-present',
+   frameworks:['Catechism Q&A','Scripture Memory','Deuteronomy 6','Story Bible'],
+   tags:['catechism','scripture','memory','bible','devotion','faith','new city catechism','jesus storybook'],
+   core:'Structured, age-appropriate transmission of biblical content through catechism, scripture memory, and narrative Bible.',
+   endorses:'The structured, measurable content side of the Faith pillar. Deuteronomy 6 is the foundation.',
+   cautions:'Memory and catechism must feed formation, not replace it. Pair with relationship and wonder.',
+   elsie:'Longer memory passages, catechism Q&A, the whole arc of scripture, honest discussion.',
+   emma:'Short verses, vivid stories, songs, a narrative story-Bible, wondering questions.',
+   evidence:'FRAMEWORK — historic mainstream practice across traditions.'},
+  {id:'reggio',name:'Reggio Emilia',domain:'Home Education',strength:'MODERATE',era:'1945-present',
+   frameworks:['Hundred Languages of Children','Project-Based','Child-Led'],
+   tags:['reggio','project based','creativity','early years','child-led','art','expression'],
+   core:'Children are capable, curious protagonists who learn through child-led projects and many forms of expression.',
+   endorses:'Excellent for early years and the creativity pillar. Lets Emma's interests drive deep projects.',
+   cautions:'Highly emergent and resource-intensive. Needs adult skill to keep it purposeful rather than aimless.',
+   elsie:'Project-based enrichment tied to her passions — art, chosen topics.',
+   emma:'A natural fit. Follow her interests into rich, documented projects.',
+   evidence:'MODERATE — well-regarded for early years, largely qualitative evidence base.'},
+  {id:'piaget',name:'Jean Piaget',domain:'Child Development',strength:'MODERATE',era:'1896-1980',
+   frameworks:['Cognitive Stages','Concrete Operational','Preoperational'],
+   tags:['stages','development','concrete','abstract','preoperational','concrete operational','age'],
+   core:'Children reason differently at different stages. Teaching must fit the developmental stage.',
+   endorses:'Sets expectations: Emma (~4) is preoperational — learn through play and concrete experience. Elsie (~9) is concrete operational — logic about tangible things.',
+   cautions:'Ages are approximate. Piaget underestimated young children. Treat stages as rough guides, not ceilings.',
+   elsie:'Use concrete materials to bridge into abstract concepts. Do not assume full abstraction yet.',
+   emma:'Preoperational: learn through play, symbols and concrete experience.',
+   evidence:'MODERATE — foundational. Ages are soft. A guide, not a law.'},
+  {id:'bloom_tax',name:'Bloom's Taxonomy',domain:'Learning Science',strength:'FRAMEWORK',era:'1956-present',
+   frameworks:['Taxonomy of Educational Objectives','Higher Order Thinking'],
+   tags:['taxonomy','higher order','analysis','evaluation','creation','knowledge','comprehension','application'],
+   core:'Learning progresses from remembering through understanding, applying, analysing, evaluating, to creating.',
+   endorses:'Use to pitch questions and tasks at the right cognitive level. Higher-order questions (why, how, what if) build deeper understanding.',
+   cautions:'The taxonomy is descriptive not prescriptive. Do not treat it as a strict ladder every lesson must climb.',
+   elsie:'Mix recall (retrieval) with analysis and application. Ask "why do you think that?" regularly.',
+   emma:'Focus on the bottom levels — remembering and understanding — through play and story.',
+   evidence:'FRAMEWORK — widely used, not a standalone empirical claim.'},
+  {id:'sayers',name:'Dorothy Sayers (Lost Tools of Learning)',domain:'Home Education',strength:'PHILOSOPHY',era:'1947',
+   frameworks:['Grammar-Logic-Rhetoric','Classical Education'],
+   tags:['classical','rhetoric','logic','grammar','argument','debate','expression','persuasion','lost tools'],
+   core:'Education should teach children how to think, not what to think — through the stages of grammar, logic and rhetoric.',
+   endorses:'The rhetoric stage (14-18) is the destination for public speaking and debate. Elsie is entering the logic stage — beginning to reason and argue.',
+   cautions:'Sayers wrote one suggestive essay in 1947, not a curriculum. The rigid ages-and-stages reading is a modern overlay.',
+   elsie:'Beginning logic stage — teach her to reason, question, and argue with evidence. Debate is a natural fit.',
+   emma:'Grammar stage — absorb, memorise, pattern-match. Rich and joyful.',
+   evidence:'PHILOSOPHY — influential essay, not an empirical study.'},
+  {id:'diamond',name:'Adele Diamond (Executive Function)',domain:'Child Development',strength:'STRONG',era:'present',
+   frameworks:['Executive Function','Inhibitory Control','Working Memory','Cognitive Flexibility'],
+   tags:['executive function','self-control','working memory','flexibility','attention','focus','martial arts','music','physical'],
+   core:'Executive function — inhibitory control, working memory, cognitive flexibility — develops across childhood and is trainable.',
+   endorses:'Physical activity, music, martial arts and self-regulation routines all build executive function. These are the very activities in the Olatoye Pillars.',
+   cautions:'Executive function develops gradually. Do not expect adult-level self-control from young children.',
+   elsie:'Build EF through martial arts, music, planning routines and deliberate practice.',
+   emma:'Build EF through play, movement, songs and simple self-regulation games.',
+   evidence:'STRONG — well-established. EF is trainable via the activities already in our pillars.'},
+];
+
+// ── FUSE.JS SEARCH ENGINE ──
+let fuse = null;
+function initFuse(){
+  if(fuse) return;
+  fuse = new Fuse(CORPUS, {
+    keys: [
+      {name:'name', weight:2},
+      {name:'tags', weight:1.8},
+      {name:'frameworks', weight:1.5},
+      {name:'core', weight:1.2},
+      {name:'endorses', weight:1},
+      {name:'cautions', weight:1},
+      {name:'domain', weight:0.8},
+      {name:'elsie', weight:0.7},
+      {name:'emma', weight:0.7},
+    ],
+    threshold: 0.4,
+    includeScore: true,
+    useExtendedSearch: true,
+  });
+}
+
+function searchCorpus(query){
+  initFuse();
+  if(!query || query.length < 2) return [];
+  return fuse.search(query).slice(0,6).map(r=>r.item);
+}
+
+// ── GROQ API (free tier, llama-3.1-8b-instant) ──
+// Replace with your Groq API key from console.groq.com (free, no credit card)
+const GROQ_KEY = 'YOUR_GROQ_API_KEY';
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+
+async function callGroq(prompt, maxTokens=800){
+  if(GROQ_KEY === 'YOUR_GROQ_API_KEY'){
+    return '⚠️ Add your free Groq API key to enable AI pressure-tests.\n\nGet one free at console.groq.com (no credit card needed) — takes 2 minutes.\n\nPaste your key into the GROQ_KEY variable in index.html.';
+  }
+  const r = await fetch(GROQ_URL, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_KEY}`},
+    body: JSON.stringify({
+      model: 'llama-3.1-8b-instant',
+      max_tokens: maxTokens,
+      messages:[{role:'user',content:prompt}]
+    })
+  });
+  const d = await r.json();
+  return d.choices?.[0]?.message?.content || 'No response from Groq.';
+}
+
+// Legacy proxy URL (no longer needed — Groq handles AI directly)
 const PROXY_URL = 'https://YOUR-WORKER.workers.dev';
 
 // ── DATA ──
@@ -667,24 +981,34 @@ function drawLib(tab){
   const b=document.getElementById('lib-body');
   if(tab==='find'){
     b.innerHTML=`
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <input type="text" id="rq" placeholder="e.g. Yoruba classes UK, LAMDA exams, GL Assessment" style="flex:1">
-      <button class="btn btn-p" style="width:auto;padding:12px 16px" onclick="searchRes()"><i class="ti ti-search"></i></button>
+    <div style="margin-bottom:14px">
+      <div style="font-size:13px;font-weight:600;color:var(--t);margin-bottom:4px">Search our knowledge base</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Find what our education experts say — instantly, no internet needed</div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="rq" placeholder="e.g. motivation, Yoruba, public speaking, hothousing..." style="flex:1" oninput="liveSearch(this.value)">
+      </div>
     </div>
     <div class="qps">
-      <span class="qp" onclick="qSearch('public speaking debate online UK ages 9-11')">Public speaking</span>
-      <span class="qp" onclick="qSearch('Yoruba language children UK diaspora')">Yoruba classes</span>
-      <span class="qp" onclick="qSearch('LAMDA graded exams public speaking children')">LAMDA exams</span>
-      <span class="qp" onclick="qSearch('martial arts Kent children beginners')">Martial arts Kent</span>
-      <span class="qp" onclick="qSearch('Suzuki violin teacher Kent children')">Suzuki teacher</span>
-      <span class="qp" onclick="qSearch('GL Assessment Progress Test home education UK')">GL Assessment</span>
-      <span class="qp" onclick="qSearch('English Speaking Union primary debate UK')">ESU debate</span>
-      <span class="qp" onclick="qSearch('children therapist emotional development Kent UK')">EQ therapist</span>
-      <span class="qp" onclick="qSearch('art competitions children UK primary')">Art competitions</span>
-      <span class="qp" onclick="qSearch('children enterprise business education UK primary')">Business education</span>
-      <span class="qp" onclick="qSearch('Christian homeschool curriculum UK')">Christian curriculum</span>
+      <span class="qp" onclick="setSearch('acceleration ahead')">Getting ahead</span>
+      <span class="qp" onclick="setSearch('motivation warmth autonomy')">Motivation</span>
+      <span class="qp" onclick="setSearch('hothousing pressure anxiety')">Too much pressure?</span>
+      <span class="qp" onclick="setSearch('Yoruba heritage protective')">Heritage & Yoruba</span>
+      <span class="qp" onclick="setSearch('public speaking confidence character')">Public speaking</span>
+      <span class="qp" onclick="setSearch('reading phonics early years')">Early reading</span>
+      <span class="qp" onclick="setSearch('martial arts self-regulation')">Martial arts</span>
+      <span class="qp" onclick="setSearch('faith christian bible')">Faith formation</span>
+      <span class="qp" onclick="setSearch('money enterprise habits')">Money & enterprise</span>
+      <span class="qp" onclick="setSearch('music executive function')">Music</span>
     </div>
-    <div id="res-out"><div style="text-align:center;padding:30px 0;color:var(--t3);font-size:13px">Search or pick a quick option</div></div>`;
+    <div id="corpus-results" style="margin-bottom:16px"></div>
+    <div style="height:1px;background:var(--b);margin-bottom:14px"></div>
+    <div style="font-size:13px;font-weight:600;color:var(--t);margin-bottom:4px">Find external resources</div>
+    <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Providers, tools and courses — uses Groq AI</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input type="text" id="ext-rq" placeholder="e.g. martial arts Kent, LAMDA exams, Suzuki teacher" style="flex:1">
+      <button class="btn btn-p" style="width:auto;padding:12px 16px" onclick="searchExt()"><i class="ti ti-search"></i></button>
+    </div>
+    <div id="res-out"><div style="font-size:12px;color:var(--t3)">Type above to find UK providers and resources</div></div>`;
   } else if(tab==='plan'){
     b.innerHTML=`<div class="card">
       <div class="field"><label>What do you need a plan for?</label>
@@ -828,35 +1152,114 @@ function toggleSch(id){selSch.has(id)?selSch.delete(id):selSch.add(id);drawSch()
 function clearSch(){selSch.clear();drawSch();}
 async function runPT(){
   const q=document.getElementById('sq').value.trim();if(!q)return;
-  const names=SCHOLARS.filter(s=>selSch.has(s.id)).map(s=>`${s.name} (${s.strength})`);
   const box=document.getElementById('pt-box'),out=document.getElementById('pt-out');
   box.style.display='block';
-  out.innerHTML='<div class="thinking">Running across '+names.length+' scholar'+(names.length>1?'s':'')+'…</div>';
-  const prompt=`You are the Olatoye Academy scholarly control, grounded in: ${names.join(', ')}.
-Context: home-educating Elsie (Year 5, ~9, target Year 7 by summer 2027) and Emma (Reception, ~4) in Kent, England. Nine Olatoye Pillars: Faith, Heritage/Yoruba, Art, Character/Confidence, Mental Health & EQ, Business/Enterprise, Champion Mindset, Physical/Martial, Digital/Tech. Philosophy: big goals for who you must become to reach them.
-Decision: "${q}"
-For each thinker: ENDORSE and CAUTION (2-3 sentences each). Then VERDICT: adopt/adjust/reconsider with single most important adjustment. Direct and practical.`;
+  out.innerHTML='<div class="thinking">Searching knowledge base…</div>';
+
+  // RAG step: pull relevant scholar profiles from corpus
+  const selected=CORPUS.filter(s=>selSch.has(s.id));
+  // Also do a semantic search to catch any relevant unselected scholars
+  const searchHits=searchCorpus(q).filter(s=>!selSch.has(s.id)).slice(0,2);
+  const allRelevant=[...selected,...searchHits];
+
+  if(!allRelevant.length){
+    out.innerHTML='<div style="color:var(--amber);font-size:13px">Select at least one scholar above, or use a Quick pressure-test.</div>';
+    return;
+  }
+
+  // Build context from corpus profiles (no credits spent on context — it's local)
+  const ctx=allRelevant.map(s=>`
+SCHOLAR: ${s.name} [Evidence: ${s.strength}]
+Core idea: ${s.core}
+Endorses: ${s.endorses}
+Cautions: ${s.cautions}
+For Elsie (Year 5): ${s.elsie}
+For Emma (Reception): ${s.emma}
+`).join('\n---\n');
+
+  out.innerHTML='<div class="thinking">Running pressure-test via Groq…</div>';
+
+  const prompt=`You are the Olatoye Academy scholarly control. You have these scholar profiles from our knowledge base:
+
+${ctx}
+
+---
+Context: Bolaji and Funmi home-educate Elsie (Year 5, ~9, target Year 7 by summer 2027) and Emma (Reception, ~4) in Kent, England. Nine Olatoye Pillars: Faith, Heritage/Yoruba, Art, Character/Confidence, Mental Health & EQ, Business/Enterprise, Champion Mindset, Physical/Martial, Digital/Tech. Philosophy: big goals because of who the children must become to reach them.
+
+Decision to pressure-test: "${q}"
+
+For each scholar in the profiles above, give:
+ENDORSES: what they would support about this plan (2 sentences)
+CAUTIONS: what they would warn against (2 sentences)
+
+Then give a clear VERDICT: Adopt / Adopt with adjustments / Reconsider
+And the single most important adjustment to make.
+
+Be direct, warm, and practical. Write for a parent, not an academic.`;
+
   try{
-    const r=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    const d=await r.json();
-    out.textContent=d.content?.filter(x=>x.type==='text').map(x=>x.text).join('')||'No response.';
-  }catch(e){out.innerHTML='<span style="color:var(--red)">Connection error.</span>';}
+    const text = await callGroq(prompt, 900);
+    out.innerHTML=`<div style="font-size:13px;line-height:1.8;color:var(--t2);white-space:pre-wrap">${text}</div>`;
+  }catch(e){out.innerHTML='<span style="color:var(--red);font-size:13px">Connection error. Check your Groq key at console.groq.com</span>';}
 }
 
-function qSearch(q){document.getElementById('rq').value=q;searchRes();}
-async function searchRes(){
-  const q=document.getElementById('rq').value.trim();
+function setSearch(q){
+  const inp=document.getElementById('rq');
+  if(inp){inp.value=q;liveSearch(q);}
+}
+
+function liveSearch(q){
+  const out=document.getElementById('corpus-results');
+  if(!out)return;
+  if(!q||q.length<2){out.innerHTML='';return;}
+  const results=searchCorpus(q);
+  if(!results.length){
+    out.innerHTML='<div style="font-size:12px;color:var(--t3);padding:8px 0">No scholars found for that search — try different words</div>';
+    return;
+  }
+  out.innerHTML=results.map(s=>`
+  <div style="background:#fff;border:1px solid var(--b);border-radius:var(--rs);padding:14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(74,30,107,.05)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:14px;font-weight:500;color:var(--t)">${s.name}</div>
+      <span class="badge ${SB_C[s.strength]||'bg-g'}" style="font-size:10px">${s.strength}</span>
+    </div>
+    <div style="font-size:12px;color:var(--t3);margin-bottom:8px">${s.domain} · ${s.frameworks.slice(0,2).join(' · ')}</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:8px">${s.core}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="background:#F0EBF8;border-radius:6px;padding:8px">
+        <div style="font-size:10px;font-weight:600;color:var(--p);margin-bottom:3px">ENDORSES</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.5">${s.endorses.slice(0,120)}${s.endorses.length>120?'…':''}</div>
+      </div>
+      <div style="background:#FEF6E8;border-radius:6px;padding:8px">
+        <div style="font-size:10px;font-weight:600;color:var(--amber);margin-bottom:3px">CAUTIONS</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.5">${s.cautions.slice(0,120)}${s.cautions.length>120?'…':''}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
+      <div style="background:#F7F5FA;border-radius:6px;padding:7px">
+        <div style="font-size:10px;font-weight:600;color:var(--t3);margin-bottom:2px">FOR ELSIE</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.5">${s.elsie}</div>
+      </div>
+      <div style="background:#F7F5FA;border-radius:6px;padding:7px">
+        <div style="font-size:10px;font-weight:600;color:var(--t3);margin-bottom:2px">FOR EMMA</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.5">${s.emma}</div>
+      </div>
+    </div>
+  </div>`).join('');
+}
+
+async function searchExt(){
+  const q=document.getElementById('ext-rq').value.trim();
   const out=document.getElementById('res-out');
-  if(!q){out.innerHTML='<div style="color:var(--red);font-size:13px">Enter a search first.</div>';return;}
+  if(!q){out.innerHTML='<div style="color:var(--red);font-size:12px">Enter a search first.</div>';return;}
   out.innerHTML='<div class="thinking">Finding resources…</div>';
-  const prompt=`Research assistant for Olatoye Academy, home education in Kent, England. Children: Elsie (Year 5, ~9) and Emma (Reception, ~4). Programme: UK National Curriculum + nine pillars: Faith, Heritage/Yoruba, Art, Character/Public Speaking, Mental Health & EQ, Business/Enterprise, Champion Mindset, Physical/Martial, Digital/Tech.
+  const prompt=`Research assistant for Olatoye Academy, home education in Kent, England. Elsie (Year 5, ~9) and Emma (Reception, ~4). Nine pillars: Faith, Heritage/Yoruba, Art, Character/Public Speaking, Mental Health & EQ, Business/Enterprise, Champion Mindset, Physical/Martial, Digital/Tech.
 Find the best UK-accessible resources for: "${q}"
-For each: name, URL, what it is, who it suits (Elsie/Emma/both), cost (free/paid), one-line reason it fits. List 5-6 specific, actionable results.`;
+For each: name, URL, what it is, who it suits, cost (free/paid), one-line reason it fits. List 5-6 specific results.`;
   try{
-    const r=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,messages:[{role:'user',content:prompt}]})});
-    const d=await r.json();
-    out.innerHTML=`<div style="font-size:13px;line-height:1.75;color:var(--t2);white-space:pre-wrap">${d.content?.filter(x=>x.type==='text').map(x=>x.text).join('')||'No results.'}</div>`;
-  }catch(e){out.innerHTML='<div style="color:var(--red);font-size:13px">Connection error.</div>';}
+    const text = await callGroq(prompt, 700);
+    out.innerHTML=`<div style="font-size:13px;line-height:1.75;color:var(--t2);white-space:pre-wrap">${text}</div>`;
+  }catch(e){out.innerHTML='<div style="color:var(--red);font-size:13px">Connection error. Check your Groq key.</div>';}
 }
 
 async function genPlan(){
@@ -872,10 +1275,9 @@ Focus: ${focus}. Child: ${child}.
 Plan: "${q}"
 Format: Overview (2-3 sentences) · Phase-by-phase progression with specific steps · Success markers · Resources · Watch-outs. Ground in: mastery before moving, deliberate practice, warmth over pressure.`;
   try{
-    const r=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    const d=await r.json();
-    out.textContent=d.content?.filter(x=>x.type==='text').map(x=>x.text).join('')||'No plan generated.';
-  }catch(e){out.innerHTML='<div style="color:var(--red);font-size:13px">Connection error.</div>';}
+    const text = await callGroq(prompt, 1000);
+    out.textContent=text;
+  }catch(e){out.innerHTML='<div style="color:var(--red);font-size:13px">Connection error. Check your Groq key.</div>';}
 }
 
 // ── LOG ──
