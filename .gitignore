@@ -1,0 +1,4 @@
+# local env / keys — never commit
+.env
+*.key
+node_modules/
