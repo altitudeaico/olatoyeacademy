@@ -279,6 +279,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </div>
 
 <script>
+// ── CONFIG ──
+// Replace this URL with your Cloudflare Worker URL after deploying worker.js
+// See worker.js for full deploy instructions (2 minutes, free)
+const PROXY_URL = 'https://YOUR-WORKER.workers.dev';
+
 // ── DATA ──
 const CHILDREN = {
   elsie: {
@@ -350,14 +355,103 @@ const SCHEDULE = {
 };
 
 const PROSPECTUS=[
-  {id:'mission',title:'Part 1 — Mission & vision',confirm:false,body:'<p><strong>Mission:</strong> To raise Elsie and Emma into whole, God-honouring, exceptional young women — grounded in Christ, rooted in their heritage, and equipped years ahead of their peers in character, capability, and confidence.</p><p><strong>Vision:</strong> That by 16, each child has developed — across mind, body, and spirit — the foundation a typical young person does not reach until their early twenties.</p>'},
-  {id:'philosophy',title:'Part 2 — Educational philosophy',confirm:false,body:'<p>We are students of principle. Our thesis rests on Bloom (mastery learning), Ericsson (deliberate practice), Dweck (growth mindset), Mason (living education), Montessori (prepared environment), and the Classical Trivium. The greatest evidenced risk is not too little academics but too much pressure.</p>'},
-  {id:'engines',title:'Part 3 — The two engines',confirm:false,body:'<p><strong>Core Engine:</strong> UK National Curriculum — Maths, English, Science, French, Digital. Rigour, credentials, every door open.</p><p><strong>Bespoke Engine:</strong> Nine Olatoye Pillars — Faith · Heritage · Art · Character · Mental Health & EQ · Business · Champion Mindset · Physical · Digital. Both engines are non-negotiable.</p>'},
-  {id:'standards',title:'Part 5 — Standards & assessment',confirm:true,confirmText:'Confirm exact year groups and current working levels. Book GL Assessment baseline now.',body:'<p>Our standard: "Exceeds" is the floor. Levels: Emerging → Meeting → Exceeding (target) → Mastered.</p><p><strong>2027 target:</strong> Elsie at Year 7 / KS3. Emma at Year 2 / KS1. External benchmark: GL Assessment — baseline this month, re-test summer 2027.</p>'},
-  {id:'rhythm',title:'Part 6 — Weekly rhythm',confirm:true,confirmText:'Confirm fixed assembly time and weekly family meeting slot.',body:'<ul><li>Early rise (~7am) — discipline starts here</li><li>Assembly & devotion (~30 min) — faith first, every day</li><li>Up to 3 focused sessions (30–60 min), 9am–1:15pm, Mon–Fri</li><li>Enrichment: Kumon, art, cheer, martial arts, music as scheduled</li><li>Sundays: church and rest — no schooling</li></ul>'},
-  {id:'accountability',title:'Part 7 — Accountability',confirm:true,confirmText:'Confirm who owns dashboard upkeep. Lock weekly review slot in both calendars.',body:'<p>One place where everything can be seen. Daily tick → weekly 20-min review → monthly milestone check → termly Open Day. One named owner per role — not "we".</p>'},
-  {id:'provision',title:'Part 8 — Provision map',confirm:true,confirmText:'Complete with real provider names, costs and progress links.',body:'<p><strong>Active:</strong> Kumon, Kings, tutoring, art club, cheer, CultureTree, Godly Play.</p><p><strong>To start:</strong> Martial arts · Music (Suzuki/formal tuition) · TalkMaze · Therapist/emotions coach.</p>'},
-  {id:'roles',title:'Part 11 — Roles & governance',confirm:true,confirmText:'Agree who holds each role at the 4 Aug review.',body:'<p><strong>Directors (joint):</strong> Bolaji & Funmi — vision, standards, major decisions, termly review.</p><p><strong>To assign:</strong> Head of Delivery · Head of Systems · Faith & Culture lead.</p>'},
+  {id:'mission',title:'Mission & vision',icon:'ti-flag',confirm:false,
+   summary:'Whole, God-honouring, exceptional young women — ahead of their peers in character, capability and confidence.',
+   body:`<p style="font-size:15px;font-weight:600;color:var(--t);line-height:1.5;margin-bottom:12px">"To raise Elsie and Emma into whole, God-honouring, exceptional young women — grounded in Christ, rooted in their heritage, and equipped years ahead of their peers in character, capability, and confidence."</p>
+   <p><strong>Our vision:</strong> That by age 16, each child has developed — across mind, body, and spirit — the foundation a typical young person does not reach until their early twenties. Not through pressure for its own sake, but through starting early, practising deliberately, and never coasting.</p>
+   <p><strong>Why big goals?</strong> We set ambitious goals not just for the outcome — but because of who our daughters must become in order to reach them. The goal shapes the person.</p>
+   <p><strong>Our non-negotiables:</strong></p>
+   <ul><li>All in — we do this to the fullest or we do not do it</li><li>Measured — every child has clear targets and knows where they stand</li><li>Exceeds as standard — excellence is the floor, not the ceiling</li><li>Children first — we advocate for them without apology</li><li>Structure and love — always both, never one without the other</li></ul>`},
+  {id:'philosophy',title:'Our educational philosophy',icon:'ti-school',confirm:false,
+   summary:'Grounded in the world's best education research — not social media advice.',
+   body:`<p>We are students of principle. Every decision is grounded in original, authoritative research — not in whichever voice is loudest online.</p>
+   <p><strong>The thinkers we build on:</strong></p>
+   <ul>
+     <li><strong>Benjamin Bloom</strong> — one-to-one teaching with mastery before moving on is the single strongest lever in education. This is why we home educate.</li>
+     <li><strong>Anders Ericsson</strong> — it is not hours of practice but the quality and focus of practice that builds excellence. Every session has a purpose.</li>
+     <li><strong>Self-Determination Theory (Deci & Ryan)</strong> — children thrive when they have real choices, achievable challenge, and warm relationships. We protect all three.</li>
+     <li><strong>Charlotte Mason</strong> — short focused lessons, rich books, and narration (telling back what you learned) builds deep retention. Her methods align with modern science.</li>
+     <li><strong>Vygotsky</strong> — teach just above where they are with support, then step back as they grow into it. This is scaffolding.</li>
+   </ul>
+   <p><strong>The one headline from all the research:</strong> The greatest risk in this programme is not too little academics — it is too much pressure. We stretch them, we do not pressure them.</p>`},
+  {id:'engines',title:'The two engines',icon:'ti-engine',confirm:false,
+   summary:'UK National Curriculum core + nine Olatoye Pillars. Both are non-negotiable.',
+   body:`<p>Olatoye Academy runs on two engines that turn together. Neither is optional.</p>
+   <p><strong>Engine 1 — The Core (UK National Curriculum):</strong> Maths, English, Science, French, Digital & Tech. This keeps every door open — exams, university, returning to school if ever needed — and ensures the girls are never behind on the measures the wider world uses.</p>
+   <p><strong>Engine 2 — The Olatoye Pillars (our real edge):</strong></p>
+   <ul>
+     <li>🙏 Faith & Spiritual Formation</li>
+     <li>🌍 Heritage & Culture (Yoruba / Nigerian)</li>
+     <li>🎨 Art & Creativity</li>
+     <li>⭐ Character, Etiquette & Confidence</li>
+     <li>🧠 Mental Health & Emotional Development</li>
+     <li>💼 Business, Enterprise & Legacy</li>
+     <li>🏆 Champion Mindset & Winning Strategy</li>
+     <li>🛡️ Physical Excellence & Martial Discipline</li>
+     <li>💻 Digital, Tech & AI</li>
+   </ul>
+   <p>A child excellent on the Core Engine alone and still unequipped for life. A child rich in the Pillars without rigour lacks credentials. Olatoye Academy insists on both.</p>`},
+  {id:'target',title:'The 2027 target',icon:'ti-target',confirm:true,
+   confirmText:'Book the GL Assessment starting-point test this week for both girls. This is what "two years ahead" will be measured against.',
+   summary:'Both children working two academic years ahead of their age by summer 2027.',
+   body:`<p><strong>The goal:</strong> Both Elsie and Emma working two academic years ahead of their age-typical level by summer 2027.</p>
+   <p><strong>Why this goal?</strong> Not for the number itself — but for who they will need to become to reach it. The discipline, the habits, the confidence that comes from doing hard things early.</p>
+   <p><strong>What "two years ahead" means in practice:</strong></p>
+   <ul>
+     <li><strong>Elsie (currently Year 5):</strong> Working securely at Year 7 / Key Stage 3 level in Maths and English by summer 2027</li>
+     <li><strong>Emma (currently Reception):</strong> Working securely at Year 2 / Key Stage 1 level in reading and number by summer 2027</li>
+   </ul>
+   <p><strong>How we measure it honestly:</strong> GL Assessment Progress Tests — standardised, nationally-benchmarked tests we arrange independently. We sit them now as a baseline, and re-test in summer 2027. "Two years ahead" stops being our opinion and becomes documented fact.</p>
+   <p><strong>Our standard across everything:</strong> Emerging → Meeting → <strong>Exceeding (our target)</strong> → Mastered</p>
+   <p><strong>The guardrail:</strong> Warning signs we act on immediately — anxiety, loss of curiosity, perfectionism, tears over work. If we see these, we ease off. A happy, willing child one year ahead beats a pressured child two years ahead.</p>`},
+  {id:'rhythm',title:'The daily & weekly rhythm',icon:'ti-clock',confirm:true,
+   confirmText:'Confirm the fixed assembly time and the weekly family review slot — both need to be in the calendar.',
+   summary:'Structure is itself part of the curriculum. Faith first, every day.',
+   body:`<p>Structure is part of what we are teaching. The children learn discipline, reliability and self-respect from a home that runs to a rhythm.</p>
+   <p><strong>Every morning:</strong></p>
+   <ul>
+     <li>Early rise (~7am) — rising well is a trained discipline</li>
+     <li>Family assembly & devotion (~30 minutes) — faith first, before anything academic</li>
+   </ul>
+   <p><strong>Monday to Friday:</strong></p>
+   <ul>
+     <li>Up to 3 focused learning sessions (30–60 minutes each), 9am–1:15pm</li>
+     <li>Enrichment activities — Kumon, art club, cheer, martial arts, music — scheduled through the week</li>
+   </ul>
+   <p><strong>Sunday:</strong> Church and rest. No formal schooling. Protected without exception.</p>
+   <p><strong>Review cadence:</strong> Daily tick (did sessions happen?) → Weekly 20-minute family review → Monthly milestone check → Termly Open Day celebration.</p>`},
+  {id:'provision',title:'Providers & activities',icon:'ti-building-school',confirm:true,
+   confirmText:'Complete this map with real costs, schedules, and how progress from each provider is tracked.',
+   summary:'Every pound we spend has a clear job. See the full map of what each activity delivers.',
+   body:`<p>Every activity we invest in should have a clear job — which pillar it serves — and a clear way of tracking its progress.</p>
+   <p><strong>Active now:</strong></p>
+   <ul>
+     <li><strong>Kumon</strong> — Maths + English for Elsie. Daily. Built-in above-grade progression.</li>
+     <li><strong>Kings InterHigh</strong> — Online school for Elsie. Confirm which subjects and timetable.</li>
+     <li><strong>Tutoring</strong> — Core subjects, one-to-one mastery model.</li>
+     <li><strong>Art Club</strong> — Tuesday, Elsie. Creativity Pillar.</li>
+     <li><strong>Cheer</strong> — Weekly, Elsie. Physical Pillar.</li>
+     <li><strong>CultureTree</strong> — Yoruba immersion, Emma. Heritage Pillar.</li>
+   </ul>
+   <p><strong>Starting soon:</strong></p>
+   <ul>
+     <li>TalkMaze — public speaking for Elsie (trial to book this week)</li>
+     <li>Martial arts — both girls (provider TBC)</li>
+     <li>Music instrument — Suzuki for Emma, formal tuition for Elsie</li>
+     <li>Therapist / emotions coach — both girls, monthly, as core provision</li>
+   </ul>`},
+  {id:'roles',title:'Who does what',icon:'ti-users',confirm:true,
+   confirmText:'Agree who holds each role at the 4 Aug review — this section must reflect a shared decision, not a default.',
+   summary:'Clear roles so nothing falls through the gap between us.',
+   body:`<p>Olatoye Academy is run like an institution, with clear roles — so that nothing important falls through the gap between us, and so the children see two parents working as an organised, united team.</p>
+   <p><strong>Directors (joint) — Bolaji & Funmi:</strong> Vision, standards, major decisions, and the termly review.</p>
+   <p><strong>To agree and assign:</strong></p>
+   <ul>
+     <li><strong>Head of Delivery</strong> — owns day-to-day teaching, timetable, provision, and keeping the tracker up to date</li>
+     <li><strong>Head of Systems</strong> — owns the app, tools, tracking and reporting</li>
+     <li><strong>Faith & Culture lead</strong> — owns assembly, Bible curriculum, heritage, and family ceremonies</li>
+   </ul>
+   <p>The principle: we play to each other's strengths, hold each other accountable with honesty and grace, and make sure the person closest to the children's daily world has the authority to advocate hard for them when it matters.</p>`},
 ];
 
 const SCHOLARS=[
@@ -608,30 +702,82 @@ function drawLib(tab){
     </div>
     <div class="ai-box" id="plan-box" style="display:none"><h4>Generated plan</h4><div class="ai-out" id="plan-out"></div></div>`;
   } else if(tab==='scholars'){
-    b.innerHTML=`<div class="sl" style="margin-top:0">Select scholars · pressure-test a decision</div>
-    <div class="sch-grid" id="sch-grid"></div>
-    <div id="sch-panel" style="display:none">
-      <div class="field"><label>Decision to pressure-test</label><textarea id="sq" placeholder="e.g. We want Elsie to skip Year 6 maths and go straight to Year 7. Is this safe?"></textarea></div>
-      <div class="btn-row">
-        <button class="btn btn-p" onclick="runPT()"><i class="ti ti-brain"></i>Pressure-test</button>
-        <button class="btn btn-gh" style="width:auto;padding:12px 16px" onclick="clearSch()"><i class="ti ti-x"></i></button>
+    b.innerHTML=`
+    <div class="card" style="background:linear-gradient(135deg,#2D0F45,#4A1E6B);border:none;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:600;color:#C9A84C;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Board of Advisors</div>
+      <div style="font-size:15px;font-weight:600;color:#fff;line-height:1.4;margin-bottom:8px">Pressure-test any decision against the world's leading education researchers</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.6">Select the scholars whose lens matters for your question, describe what you're planning, and get a clear verdict — what they'd back, what they'd warn against, and whether to go ahead.</div>
+    </div>
+
+    <div class="sl" style="margin-top:0">Quick pressure-tests</div>
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:14px">
+      <div class="row" style="padding:14px 16px;cursor:pointer" onclick="quickPT('Is it safe to accelerate Elsie two years ahead in maths?','bloom,ericsson,acceleration,dweck')">
+        <div class="ri ri-p"><i class="ti ti-rocket"></i></div>
+        <div class="rb"><div class="rt">Is acceleration safe for Elsie?</div><div class="rs">Bloom, Ericsson, Acceleration research</div></div>
+        <i class="ti ti-chevron-right" style="color:var(--t3);font-size:14px"></i>
       </div>
-      <div class="ai-box" id="pt-box" style="display:none"><h4>Result</h4><div class="ai-out" id="pt-out"></div></div>
+      <div class="row" style="padding:14px 16px;cursor:pointer" onclick="quickPT('We are pushing Elsie hard on academics — how do we know if we are going too far?','sdt,acceleration,erikson,gottman')">
+        <div class="ri ri-a"><i class="ti ti-alert-triangle"></i></div>
+        <div class="rb"><div class="rt">How do we know if we're pushing too hard?</div><div class="rs">SDT, Erikson, Gottman, Hothousing research</div></div>
+        <i class="ti ti-chevron-right" style="color:var(--t3);font-size:14px"></i>
+      </div>
+      <div class="row" style="padding:14px 16px;cursor:pointer" onclick="quickPT('What is the best way to build Elsie confidence for public speaking and competitions?','jubilee,sdt,mason,duckworth')">
+        <div class="ri ri-g"><i class="ti ti-microphone"></i></div>
+        <div class="rb"><div class="rt">Building Elsie's confidence and competitive edge</div><div class="rs">Jubilee Centre, SDT, Charlotte Mason</div></div>
+        <i class="ti ti-chevron-right" style="color:var(--t3);font-size:14px"></i>
+      </div>
+      <div class="row" style="padding:14px 16px;cursor:pointer;border:none" onclick="quickPT('How important is teaching Yoruba and Nigerian heritage to our daughters wellbeing and academic success?','ers,sdt,erikson')">
+        <div class="ri ri-t"><i class="ti ti-globe"></i></div>
+        <div class="rb"><div class="rt">Why Yoruba and heritage really matter</div><div class="rs">Ethnic-racial socialization research</div></div>
+        <i class="ti ti-chevron-right" style="color:var(--t3);font-size:14px"></i>
+      </div>
+    </div>
+
+    <div class="sl">Ask your own question</div>
+    <div class="card">
+      <div class="field" style="margin-bottom:8px"><label>What are you trying to decide?</label>
+        <textarea id="sq" rows="3" placeholder="e.g. Emma is 4 — should we start formal reading lessons now or keep it play-based?"></textarea>
+      </div>
+      <div class="field"><label>Which experts should weigh in?</label>
+        <div class="sch-grid" id="sch-grid" style="margin-bottom:0"></div>
+      </div>
+      <button class="btn btn-p" onclick="runPT()" style="margin-top:4px"><i class="ti ti-brain"></i>Get expert verdict</button>
+      <div class="ai-box" id="pt-box" style="display:none"><h4>Expert verdict</h4><div class="ai-out" id="pt-out"></div></div>
     </div>`;
     drawSch();
   } else {
-    b.innerHTML=PROSPECTUS.map(s=>`
-    <div class="card" style="margin-bottom:10px;padding:0;overflow:hidden">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer" onclick="togglePS('${s.id}')">
-        <div style="font-size:14px;font-weight:500;flex:1">${s.title}</div>
-        <div style="display:flex;align-items:center;gap:8px">
-          ${s.confirm?'<span class="badge bg-a">Confirm</span>':'<span class="badge bg-gn">Done</span>'}
+    // Prospectus header
+    b.innerHTML=`<div class="card" style="background:linear-gradient(135deg,#2D0F45,#4A1E6B);border:none;margin-bottom:16px">
+      <div style="font-size:11px;font-weight:600;color:#C9A84C;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Olatoye Academy</div>
+      <div style="font-size:17px;font-weight:600;color:#fff;margin-bottom:4px">Academy Plan — 2026/27</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.6);line-height:1.6">The governing document for Elsie and Emma's education. Tap any section to read it in full.</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <span class="badge" style="background:rgba(52,199,89,.25);color:#7DEBA0;font-size:10px">${PROSPECTUS.filter(s=>!s.confirm).length} sections complete</span>
+        <span class="badge" style="background:rgba(255,159,10,.25);color:#FFD080;font-size:10px">${PROSPECTUS.filter(s=>s.confirm).length} decisions needed</span>
+      </div>
+    </div>`+
+    PROSPECTUS.map(s=>`
+    <div style="background:#fff;border:1px solid var(--b);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:0 1px 4px rgba(74,30,107,.06)">
+      <div style="display:flex;align-items:center;gap:12px;padding:15px 16px;cursor:pointer" onclick="togglePS('${s.id}')">
+        <div style="width:36px;height:36px;border-radius:10px;background:${s.confirm?'rgba(255,159,10,.12)':'rgba(74,30,107,.08)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="ti ${s.icon}" style="font-size:18px;color:${s.confirm?'var(--amber)':'var(--p)'}"></i>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:500;color:var(--t)">${s.title}</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.summary}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          ${s.confirm?'<span class="badge bg-a" style="font-size:10px">Needed</span>':'<span class="badge bg-gn" style="font-size:10px">Done</span>'}
           <i class="ti ${expPS.has(s.id)?'ti-chevron-up':'ti-chevron-down'}" style="font-size:14px;color:var(--t3)"></i>
         </div>
       </div>
-      ${expPS.has(s.id)?`<div style="padding:0 16px 16px;border-top:1px solid var(--b)">
-        <div style="font-size:13px;color:var(--t2);line-height:1.7;margin-top:12px">${s.body.replace(/<p>/g,'').replace(/<\/p>/g,'<br>').replace(/<strong>/g,'').replace(/<\/strong>/g,'').replace(/<ul>/g,'').replace(/<\/ul>/g,'').replace(/<li>/g,'• ').replace(/<\/li>/g,'<br>')}</div>
-        ${s.confirm?`<div style="background:rgba(169,131,42,.1);border:1px solid rgba(169,131,42,.25);border-radius:var(--rx);padding:10px 12px;margin-top:10px;font-size:12px;color:var(--gb)"><strong>To confirm:</strong> ${s.confirmText}</div>`:''}
+      ${expPS.has(s.id)?`
+      <div style="padding:16px;border-top:1px solid var(--b);background:#FAFAF8">
+        <div style="font-size:13px;color:var(--t2);line-height:1.8">${s.body}</div>
+        ${s.confirm?`<div style="background:#FEF3E2;border:1px solid #F0C875;border-radius:var(--rx);padding:12px 14px;margin-top:14px">
+          <div style="font-size:11px;font-weight:600;color:#8A5A00;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">Decision needed</div>
+          <div style="font-size:13px;color:#7A4A00;line-height:1.6">${s.confirmText}</div>
+        </div>`:''}
       </div>`:''}
     </div>`).join('');
   }
@@ -639,7 +785,30 @@ function drawLib(tab){
 
 function togglePS(id){
   expPS.has(id)?expPS.delete(id):expPS.add(id);
-  drawLib('prospectus');
+  // Re-render just the list without rebuilding the full tab
+  const b=document.getElementById('lib-body');
+  if(b) drawLib('prospectus');
+}
+
+function quickPT(question, scholarIds){
+  // Pre-select scholars
+  selSch.clear();
+  scholarIds.split(',').forEach(id => selSch.add(id.trim()));
+  // Navigate to scholars tab
+  const btns = document.querySelectorAll('#view-library .sb');
+  btns.forEach(b=>b.classList.remove('active'));
+  // find scholars button
+  btns.forEach(b=>{ if(b.getAttribute('onclick') && b.getAttribute('onclick').includes('scholars')) b.classList.add('active'); });
+  drawLib('scholars');
+  // Pre-fill question
+  setTimeout(()=>{
+    const sq = document.getElementById('sq');
+    const ptbox = document.getElementById('pt-box');
+    if(sq) sq.value = question;
+    drawSch();
+    // Auto-run
+    runPT();
+  }, 100);
 }
 
 function drawSch(){
@@ -668,7 +837,7 @@ Context: home-educating Elsie (Year 5, ~9, target Year 7 by summer 2027) and Emm
 Decision: "${q}"
 For each thinker: ENDORSE and CAUTION (2-3 sentences each). Then VERDICT: adopt/adjust/reconsider with single most important adjustment. Direct and practical.`;
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const r=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const d=await r.json();
     out.textContent=d.content?.filter(x=>x.type==='text').map(x=>x.text).join('')||'No response.';
   }catch(e){out.innerHTML='<span style="color:var(--red)">Connection error.</span>';}
@@ -684,7 +853,7 @@ async function searchRes(){
 Find the best UK-accessible resources for: "${q}"
 For each: name, URL, what it is, who it suits (Elsie/Emma/both), cost (free/paid), one-line reason it fits. List 5-6 specific, actionable results.`;
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const r=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,messages:[{role:'user',content:prompt}]})});
     const d=await r.json();
     out.innerHTML=`<div style="font-size:13px;line-height:1.75;color:var(--t2);white-space:pre-wrap">${d.content?.filter(x=>x.type==='text').map(x=>x.text).join('')||'No results.'}</div>`;
   }catch(e){out.innerHTML='<div style="color:var(--red);font-size:13px">Connection error.</div>';}
@@ -703,7 +872,7 @@ Focus: ${focus}. Child: ${child}.
 Plan: "${q}"
 Format: Overview (2-3 sentences) · Phase-by-phase progression with specific steps · Success markers · Resources · Watch-outs. Ground in: mastery before moving, deliberate practice, warmth over pressure.`;
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const r=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const d=await r.json();
     out.textContent=d.content?.filter(x=>x.type==='text').map(x=>x.text).join('')||'No plan generated.';
   }catch(e){out.innerHTML='<div style="color:var(--red);font-size:13px">Connection error.</div>';}
