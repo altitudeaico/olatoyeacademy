@@ -170,7 +170,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="hero">
     <div class="hero-ey">Academic Year 2026/27 · Year Two</div>
     <div class="hero-h">Two years ahead by summer 2027</div>
-    <div class="hero-s">Acceleration is safe. Hothousing is the risk.<br>The goal drives provision — never the child.</div>
+    <div class="hero-s">We stretch them, we don't pressure them.<br>Big goals — because of who they'll become to reach them.</div>
   </div>
   <div class="mg">
     <div class="metric" style="cursor:pointer;box-shadow:0 2px 8px rgba(74,30,107,.1)" onclick="navToChild('elsie')">
@@ -188,10 +188,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
   <div class="sl">Priority actions</div>
   <div class="card">
-    <div class="row"><div class="ri ri-r"><i class="ti ti-microphone"></i></div><div class="rb"><div class="rt">Book TalkMaze trial</div><div class="rs">Public speaking — this week</div></div><div class="rr"><span class="badge bg-r">Now</span></div></div>
-    <div class="row"><div class="ri ri-r"><i class="ti ti-chart-bar"></i></div><div class="rb"><div class="rt">GL Assessment baseline</div><div class="rs">Both children — this week</div></div><div class="rr"><span class="badge bg-r">Now</span></div></div>
-    <div class="row"><div class="ri ri-a"><i class="ti ti-file-text"></i></div><div class="rb"><div class="rt">Complete TO CONFIRM blocks</div><div class="rs">Prospectus — 4 Aug</div></div><div class="rr"><span class="badge bg-a">4 Aug</span></div></div>
-    <div class="row"><div class="ri ri-a"><i class="ti ti-target"></i></div><div class="rb"><div class="rt">Set pillar milestones</div><div class="rs">Both children — August</div></div><div class="rr"><span class="badge bg-a">Aug</span></div></div>
+    <div class="row"><div class="ri ri-r"><i class="ti ti-microphone"></i></div><div class="rb"><div class="rt">Start public speaking lessons</div><div class="rs">Book TalkMaze trial — this week</div></div><div class="rr"><span class="badge bg-r">Now</span></div></div>
+    <div class="row"><div class="ri ri-r"><i class="ti ti-chart-bar"></i></div><div class="rb"><div class="rt">Book a starting-point test</div><div class="rs">Standardised assessment for both girls — this week</div></div><div class="rr"><span class="badge bg-r">Now</span></div></div>
+    <div class="row"><div class="ri ri-a"><i class="ti ti-file-text"></i></div><div class="rb"><div class="rt">Finish the Academy plan</div><div class="rs">A few decisions still needed — review together 4 Aug</div></div><div class="rr"><span class="badge bg-a">4 Aug</span></div></div>
+    <div class="row"><div class="ri ri-a"><i class="ti ti-target"></i></div><div class="rb"><div class="rt">Set goals for each activity</div><div class="rs">One clear target per subject and enrichment — August</div></div><div class="rr"><span class="badge bg-a">Aug</span></div></div>
   </div>
   <div class="sl">Today</div>
   <div class="card">
@@ -199,9 +199,22 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="row"><div class="ri ri-p"><i class="ti ti-calculator"></i></div><div class="rb"><div class="rt">Maths — Kumon</div><div class="rs">9:30 · Elsie</div></div></div>
     <div class="row"><div class="ri ri-p"><i class="ti ti-book"></i></div><div class="rb"><div class="rt">English — reading + narration</div><div class="rs">10:30 · Elsie</div></div></div>
   </div>
-  <div class="sl">Evidence guardrail</div>
-  <div class="card" style="background:rgba(74,30,107,.12);border-color:rgba(74,30,107,.25)">
-    <div style="font-size:13px;color:var(--t2);line-height:1.75">Warmth, play and intrinsic motivation protected above all. <span style="color:var(--t);font-weight:500">Two years ahead is a target for provision and pace — never pressure on the child.</span></div>
+  <div class="sl">Quick links</div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="row" style="padding:14px 16px;cursor:pointer" onclick="navToProspectus()">
+      <div class="ri ri-p"><i class="ti ti-file-text"></i></div>
+      <div class="rb"><div class="rt">Academy Plan (Prospectus)</div><div class="rs">The governing document for Olatoye Academy</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--t3);font-size:16px"></i>
+    </div>
+    <div class="row" style="padding:14px 16px;cursor:pointer;border:none" onclick="nav('log')">
+      <div class="ri ri-g"><i class="ti ti-pencil"></i></div>
+      <div class="rb"><div class="rt">Track a session</div><div class="rs">Log what the girls did today</div></div>
+      <i class="ti ti-chevron-right" style="color:var(--t3);font-size:16px"></i>
+    </div>
+  </div>
+  <div class="sl">Our principle</div>
+  <div class="card" style="background:rgba(74,30,107,.06);border-color:rgba(74,30,107,.12)">
+    <div style="font-size:13px;color:var(--t2);line-height:1.75">We stretch them, we don't pressure them. <span style="color:var(--t);font-weight:500">Big goals — because of who they'll become on the way to reaching them.</span></div>
   </div>
 </div>
 
@@ -212,6 +225,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="csw-btn" id="csw-emma" onclick="switchChild('emma')"><i class="ti ti-user"></i>Emma</button>
   </div>
   <div class="sub-pills" id="subject-pills"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;background:#F0EBF8;border-radius:var(--rs)">
+    <span style="font-size:11px;color:var(--t3);font-weight:600;width:100%;margin-bottom:2px">Progress levels:</span>
+    <span class="badge bg-r" style="font-size:10px">Emerging</span><span style="font-size:11px;color:var(--t3)">just starting</span>
+    <span class="badge bg-a" style="font-size:10px">Meeting</span><span style="font-size:11px;color:var(--t3)">on track</span>
+    <span class="badge bg-gn" style="font-size:10px">Exceeding</span><span style="font-size:11px;color:var(--t3)">our target ✓</span>
+    <span class="badge bg-b" style="font-size:10px">Mastered</span><span style="font-size:11px;color:var(--t3)">can teach it</span>
+  </div>
   <div id="child-body"></div>
 </div>
 
@@ -252,9 +272,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <div class="tabbar">
   <button class="ti active" data-view="home" onclick="nav('home')"><i class="ti ti-home"></i><span>Home</span></button>
   <button class="ti" data-view="children" onclick="nav('children')"><i class="ti ti-users"></i><span>Our Children</span></button>
-  <button class="ti" data-view="day" onclick="nav('day')"><i class="ti ti-calendar"></i><span>Day</span></button>
-  <button class="ti" data-view="library" onclick="nav('library')"><i class="ti ti-books"></i><span>Library</span></button>
-  <button class="ti" data-view="log" onclick="nav('log')"><i class="ti ti-pencil"></i><span>Log</span></button>
+  <button class="ti" data-view="day" onclick="nav('day')"><i class="ti ti-calendar"></i><span>Schedule</span></button>
+  <button class="ti" data-view="library" onclick="nav('library')"><i class="ti ti-compass"></i><span>Explore</span></button>
+  <button class="ti" data-view="log" onclick="nav('log')"><i class="ti ti-pencil"></i><span>Track</span></button>
 </div>
 </div>
 
@@ -402,19 +422,20 @@ function drawChildren(){
   const child=CHILDREN[currentChild];
   // Draw subject pills
   const pills=['core','pillars','providers'];
-  const pillLabels={core:'Core subjects',pillars:'Pillars',providers:'Providers'};
+  const pillLabels={core:'Core subjects',pillars:'Enrichment',providers:'Clubs & classes'};
   document.getElementById('subject-pills').innerHTML=pills.map(p=>
     `<div class="sub-pill${currentSubject===p?' active':''}" onclick="switchSubject('${p}')">${pillLabels[p]}</div>`
   ).join('');
   const b=document.getElementById('child-body');
   // Child header
-  let header=`<div class="card" style="background:rgba(74,30,107,.15);border-color:rgba(74,30,107,.25);margin-bottom:14px">
+  let header=`<div class="card" style="background:linear-gradient(135deg,#2D0F45,#4A1E6B);border:none;margin-bottom:14px">
     <div style="display:flex;align-items:center;gap:12px">
-      <div style="width:48px;height:48px;border-radius:14px;background:${child.color};display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:#fff;flex-shrink:0">${child.name[0]}</div>
-      <div>
-        <div style="font-size:17px;font-weight:600">${child.name}</div>
-        <div style="font-size:13px;color:var(--t2);margin-top:2px">${child.year} · ${child.target}</div>
+      <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:#fff;flex-shrink:0">${child.name[0]}</div>
+      <div style="flex:1">
+        <div style="font-size:18px;font-weight:600;color:#fff">${child.name}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:3px">${child.year} · ${child.target}</div>
       </div>
+      <button onclick="nav('log')" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:500;color:#fff;cursor:pointer;font-family:inherit">+ Track</button>
     </div>
   </div>`;
 
@@ -428,7 +449,7 @@ function drawChildren(){
         <span class="badge ${LEVEL_C[s.level]||'bg-a'}">${s.level}</span>
       </div>
       <div style="font-size:13px;color:var(--t2);line-height:1.6;padding:10px 12px;background:var(--s2);border-radius:var(--rx)">${s.note}</div>
-      <button class="btn btn-gh" style="margin-top:10px" onclick="quickLog('${currentChild}','${s.label}')"><i class="ti ti-pencil"></i>Log a session</button>
+
     </div>`).join('');
   } else if(currentSubject==='pillars'){
     const sMap={active:'bg-gn',partial:'bg-a',tostart:'bg-r'};
@@ -442,7 +463,7 @@ function drawChildren(){
         <span class="badge ${sMap[p.status]}">${sLabel[p.status]}</span>
       </div>
       <div style="font-size:13px;color:var(--t2);line-height:1.6">${p.note}</div>
-      <button class="btn btn-gh" style="margin-top:10px" onclick="quickLog('${currentChild}','${p.label}')"><i class="ti ti-pencil"></i>Log a session</button>
+
     </div>`).join('');
   } else {
     const stMap={active:'bg-gn',confirm:'bg-a',tostart:'bg-a'};
@@ -520,13 +541,10 @@ function drawDay(tab){
     <div class="card" style="margin-top:4px;background:rgba(10,132,255,.07);border-color:rgba(10,132,255,.2)">
       <div style="font-size:13px;color:var(--t2);line-height:1.75"><strong style="color:var(--t)">To use:</strong> Open Claude, make sure Google Calendar and Gmail connectors are active, then ask: <em>"Show me all Olatoye Academy sessions this week"</em> or <em>"Any progress emails from Kings or Kumon in the last 7 days?"</em></div>
     </div>
-    <div class="sl">Kings InterHigh (iSAMS API)</div>
+    <div class="sl">Kings — connecting progress</div>
     <div class="card" style="background:rgba(255,159,10,.07);border-color:rgba(255,159,10,.2)">
       <div style="font-size:13px;color:var(--t2);line-height:1.75">
-        Kings runs on iSAMS which has a full REST API. To get live grade and attendance data:<br><br>
-        1. Email Kings and ask them to enable a <strong style="color:var(--t)">Batch API read-only key</strong> for your parent account.<br><br>
-        2. Once granted, this app can pull Elsie's grades, attendance and assignments automatically.<br><br>
-        3. If they decline, Gmail will surface their progress report emails instead.
+        Email Kings InterHigh and ask them to <strong style="color:var(--t)">share Elsie's progress reports digitally</strong> with your parent account. Once connected, her grades and attendance appear here automatically. If not, her Kings emails in Gmail are picked up automatically anyway.
       </div>
     </div>`;
   }
@@ -747,20 +765,30 @@ function drawLog(tab){
     <div class="card">
       <div class="row"><div class="int-dot dot-gn" style="margin-right:4px"></div><div class="rb"><div class="rt">Google Calendar</div><div class="rs">Live via MCP — query in Claude chat</div></div><span class="badge bg-gn">Live</span></div>
       <div class="row"><div class="int-dot dot-gn" style="margin-right:4px"></div><div class="rb"><div class="rt">Gmail</div><div class="rs">Kings & Kumon emails — live via MCP</div></div><span class="badge bg-gn">Live</span></div>
-      <div class="row"><div class="int-dot dot-a" style="margin-right:4px"></div><div class="rb"><div class="rt">Kings InterHigh (iSAMS)</div><div class="rs">API exists — ask Kings for a read key</div></div><span class="badge bg-a">Ask Kings</span></div>
+      <div class="row"><div class="int-dot dot-a" style="margin-right:4px"></div><div class="rb"><div class="rt">Kings InterHigh</div><div class="rs">Ask Kings to share progress digitally — or use Gmail</div></div><span class="badge bg-a">Ask Kings</span></div>
       <div class="row"><div class="int-dot dot-a" style="margin-right:4px"></div><div class="rb"><div class="rt">Kumon (myKumon)</div><div class="rs">No API — log manually or via Gmail updates</div></div><span class="badge bg-a">Manual</span></div>
       <div class="row"><div class="int-dot dot-r" style="margin-right:4px"></div><div class="rb"><div class="rt">Art Club · Cheer · TalkMaze · Martial arts</div><div class="rs">Small providers — manual log only</div></div><span class="badge bg-r">Manual</span></div>
     </div>
-    <div class="sl">Getting Kings iSAMS data</div>
+    <div class="sl">Getting Kings progress into the app</div>
     <div class="card" style="background:rgba(10,132,255,.06);border-color:rgba(10,132,255,.18)">
       <div style="font-size:13px;color:var(--t2);line-height:1.8">
         1. Email Kings InterHigh admin and request a <strong style="color:var(--t)">Batch API read-only key</strong> for your parent account.<br><br>
-        2. They'll send a Client ID + Client Secret and your iSAMS URL.<br><br>
+        2. They'll send a Client ID + Client Secret and your Kings parent portal.<br><br>
         3. Once you have those, this app pulls grades, attendance and assignments automatically — no manual logging needed for Kings.<br><br>
         4. If they won't grant it, Gmail already surfaces their progress emails into your Claude session.
       </div>
     </div>`;
   }
+}
+
+function navToProspectus(){
+  nav('library');
+  setTimeout(()=>{
+    const btns=document.querySelectorAll('#view-library .sb');
+    btns.forEach(b=>b.classList.remove('active'));
+    btns[btns.length-1].classList.add('active');
+    drawLib('prospectus');
+  },80);
 }
 
 function saveLog(){
