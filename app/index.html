@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olatoye Academy — Control Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Georgia&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple:#4A1E6B;--purple-light:#EDE8F4;--purple-mid:#7A4FA0;
+  --gold:#A9832A;--gold-light:#F5EDD8;--gold-mid:#D4AF6A;
+  --surface-0:#F4F2F8;--surface-1:#FAFAFA;--surface-2:#FFFFFF;
+  --text-primary:#1E1E1E;--text-secondary:#5F5F5F;--text-muted:#9A9A9A;
+  --border:#E4E4E4;--border-strong:#C8C8C8;
+  --green-bg:#EAF5EE;--green-text:#1A7A3A;
+  --amber-bg:#FEF3E2;--amber-text:#8A5A00;
+  --red-bg:#FDEAEA;--red-text:#A32D2D;
+  --radius:8px;--font-sans:'Inter',system-ui,sans-serif;--font-serif:Georgia,serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --surface-0:#0F0C14;--surface-1:#1A1525;--surface-2:#221C30;
+    --text-primary:#F0EEF5;--text-secondary:#A89EC0;--text-muted:#6B6080;
+    --border:#2E2740;--border-strong:#3D3558;
+    --green-bg:#0D2D1A;--green-text:#5AC882;
+    --amber-bg:#2D1E00;--amber-text:#D4A040;
+    --red-bg:#2D0D0D;--red-text:#E87070;
+  }
+}
+body{font-family:var(--font-sans);background:var(--surface-0);color:var(--text-primary);height:100vh;overflow:hidden;display:flex}
+.sidebar{width:224px;flex-shrink:0;background:var(--purple);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sidebar-cross{font-family:var(--font-serif);font-size:20px;color:var(--gold-mid);margin-bottom:4px}
+.sidebar-title{font-size:13px;font-weight:600;color:#fff;letter-spacing:0.03em}
+.sidebar-sub{font-size:10px;color:rgba(255,255,255,0.45);margin-top:2px;font-style:italic}
+.sidebar-nav{flex:1;padding:8px 0;overflow-y:auto}
+.nav-section-label{padding:10px 18px 4px;font-size:10px;color:rgba(255,255,255,0.38);text-transform:uppercase;letter-spacing:0.1em}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;cursor:pointer;color:rgba(255,255,255,0.65);font-size:13px;border-left:3px solid transparent;transition:all 0.12s;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:#fff}
+.nav-item.active{background:rgba(255,255,255,0.11);color:#fff;border-left-color:var(--gold)}
+.nav-item i{font-size:16px;flex-shrink:0}
+.sidebar-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,0.1)}
+.sidebar-footer p{font-size:10px;color:rgba(255,255,255,0.32);line-height:1.6}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{background:var(--surface-2);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:500}
+.topbar-badges{display:flex;gap:8px;align-items:center}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
+.badge-gold{background:var(--gold-light);color:#7A5010}
+.badge-purple{background:var(--purple-light);color:var(--purple)}
+.badge-green{background:var(--green-bg);color:var(--green-text)}
+.badge-amber{background:var(--amber-bg);color:var(--amber-text)}
+.badge-red{background:var(--red-bg);color:var(--red-text)}
+.content{flex:1;overflow-y:auto;padding:22px 26px}
+.page-header{margin-bottom:18px}
+.page-header h2{font-size:18px;font-weight:500}
+.page-header p{font-size:13px;color:var(--text-secondary);margin-top:3px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.card{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:16px}
+.card-gold{border-left:3px solid var(--gold)}
+.card-purple{border-left:3px solid var(--purple)}
+.card h3{font-size:13px;font-weight:500;margin-bottom:8px}
+.metric{background:var(--surface-1);border-radius:var(--radius);padding:14px;border:1px solid var(--border)}
+.metric-label{font-size:11px;color:var(--text-secondary);margin-bottom:4px}
+.metric-value{font-size:22px;font-weight:500}
+.metric-sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.progress{height:5px;background:var(--surface-0);border-radius:3px;overflow:hidden;margin-top:8px}
+.progress-fill{height:100%;border-radius:3px;background:var(--gold)}
+.row-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.row-item:last-child{border:none}
+.row-label{font-size:13px;flex:1}
+.row-time{font-size:12px;color:var(--text-secondary);width:68px;flex-shrink:0}
+.divider{height:1px;background:var(--border);margin:14px 0}
+.tab-bar{display:flex;gap:2px;background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius);padding:3px;margin-bottom:16px;width:fit-content}
+.tab{padding:6px 16px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-secondary);transition:all 0.12s;user-select:none}
+.tab.active{background:var(--surface-2);color:var(--text-primary);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,0.07)}
+.scholar-card{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:border-color 0.12s}
+.scholar-card:hover{border-color:var(--gold-mid)}
+.scholar-card.selected{border-color:var(--purple);background:var(--purple-light)}
+.scholar-name{font-size:13px;font-weight:500}
+.scholar-domain{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.pill-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.pill{padding:2px 8px;border-radius:20px;font-size:10px;background:var(--surface-1);color:var(--text-secondary);border:1px solid var(--border)}
+.ai-box{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-top:16px}
+.ai-box h3{font-size:13px;font-weight:500;margin-bottom:10px}
+.ai-output{font-size:13px;color:var(--text-primary);line-height:1.7;white-space:pre-wrap;min-height:60px}
+.ai-loading{color:var(--text-muted);font-style:italic;font-size:13px}
+input[type=text],textarea,select{width:100%;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-1);color:var(--text-primary);font-family:var(--font-sans);resize:vertical}
+input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--purple)}
+label{font-size:12px;color:var(--text-secondary);display:block;margin-bottom:4px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);font-size:13px;cursor:pointer;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text-primary);transition:all 0.12s;font-family:var(--font-sans)}
+.btn:hover{background:var(--surface-1)}
+.btn-purple{background:var(--purple);color:#fff;border-color:var(--purple)}
+.btn-purple:hover{background:#3a165a;border-color:#3a165a}
+.btn-gold{background:var(--gold);color:#fff;border-color:var(--gold)}
+.btn-gold:hover{background:#8a6a22;border-color:#8a6a22}
+.confirm-flash{padding:8px 12px;background:var(--green-bg);border-radius:var(--radius);font-size:12px;color:var(--green-text);margin-top:8px}
+.to-confirm-box{background:var(--gold-light);border:1px solid var(--gold-mid);border-radius:var(--radius);padding:10px 12px;margin-top:10px;font-size:12px;color:#7A5010}
+.prospectus-section{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.ps-header{padding:12px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.ps-header h3{font-size:13px;font-weight:500}
+.ps-header-right{display:flex;align-items:center;gap:8px}
+.ps-body{padding:16px}
+.ps-body p,.ps-body li{font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:6px}
+.ps-body ul{padding-left:16px}
+.edit-link{font-size:11px;color:var(--gold);cursor:pointer;text-decoration:underline}
+.provider-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.provider-row:last-child{border:none}
+.provider-icon{width:32px;height:32px;border-radius:8px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.provider-icon i{font-size:16px;color:var(--purple)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 12px;color:var(--text-secondary);font-weight:500;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border:none}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-cross">✝</div>
+    <div class="sidebar-title">Olatoye Academy</div>
+    <div class="sidebar-sub">Christ at the Centre</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" data-view="dashboard"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+    <div class="nav-section-label">Academy</div>
+    <div class="nav-item" data-view="prospectus"><i class="ti ti-file-text"></i>Prospectus</div>
+    <div class="nav-item" data-view="scholars"><i class="ti ti-school"></i>Schools of thought</div>
+    <div class="nav-item" data-view="curriculum"><i class="ti ti-books"></i>Curriculum</div>
+    <div class="nav-section-label">Operations</div>
+    <div class="nav-item" data-view="schedule"><i class="ti ti-calendar"></i>Schedule</div>
+    <div class="nav-item" data-view="resources"><i class="ti ti-search"></i>Resources & plans</div>
+  </nav>
+  <div class="sidebar-footer">
+    <p>Academic year 2026/27<br>Year Two · Kent, England<br>Bolaji &amp; Funmi · Directors</p>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-badges">
+      <span class="badge badge-gold">Bolaji &amp; Funmi</span>
+      <span class="badge badge-purple">v0.1 · Working draft</span>
+    </div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+const SCHOLARS=[
+  {id:'bloom',name:'Benjamin Bloom',domain:'Learning science',strength:'STRONG',tags:['mastery','tutoring','feedback']},
+  {id:'ericsson',name:'Anders Ericsson',domain:'Learning science',strength:'STRONG',tags:['deliberate-practice','expertise']},
+  {id:'retrieval',name:'Retrieval practice & spacing',domain:'Learning science',strength:'STRONG',tags:['memory','spacing','narration']},
+  {id:'phonics',name:'Systematic phonics',domain:'Learning science',strength:'MODERATE',tags:['reading','early-years']},
+  {id:'acceleration',name:'Acceleration vs hothousing',domain:'Learning science',strength:'STRONG',tags:['ahead','pressure','wellbeing']},
+  {id:'dweck',name:'Carol Dweck',domain:'Mindset & motivation',strength:'CONTESTED',tags:['mindset','praise']},
+  {id:'duckworth',name:'Angela Duckworth',domain:'Mindset & motivation',strength:'CONTESTED',tags:['grit','perseverance']},
+  {id:'sdt',name:'Self-Determination Theory',domain:'Mindset & motivation',strength:'STRONG',tags:['autonomy','motivation','warmth']},
+  {id:'mason',name:'Charlotte Mason',domain:'Home education',strength:'PHILOSOPHY',tags:['living-books','narration','habits']},
+  {id:'montessori',name:'Maria Montessori',domain:'Home education',strength:'MODERATE',tags:['environment','early-years']},
+  {id:'trivium',name:'Classical Trivium',domain:'Home education',strength:'PHILOSOPHY',tags:['grammar','logic','rhetoric']},
+  {id:'vygotsky',name:'Lev Vygotsky',domain:'Child development',strength:'STRONG',tags:['zpd','scaffolding']},
+  {id:'erikson',name:'Erik Erikson',domain:'Child development',strength:'MODERATE',tags:['psychosocial','industry']},
+  {id:'gottman',name:'John Gottman',domain:'Character & SEL',strength:'STRONG',tags:['emotion-coaching','self-regulation']},
+  {id:'jubilee',name:'Jubilee Centre',domain:'Character & SEL',strength:'FRAMEWORK',tags:['virtues','confidence']},
+  {id:'ers',name:'Ethnic-racial socialization',domain:'Heritage identity',strength:'STRONG',tags:['yoruba','heritage','protective']},
+  {id:'martial',name:'Physical activity & martial arts',domain:'Physical',strength:'MODERATE',tags:['self-regulation','discipline']},
+  {id:'music',name:'Music & cognition',domain:'Music',strength:'MODERATE',tags:['executive-function','discipline']},
+];
+
+const STRENGTH_BADGE={STRONG:'badge-green',MODERATE:'badge-gold',CONTESTED:'badge-amber',WEAK:'badge-red',PHILOSOPHY:'badge-purple',FRAMEWORK:'badge-purple'};
+
+const PROSPECTUS=[
+  {id:'mission',title:'Part 1 — Mission & vision',confirm:false,body:`<p><strong>Mission:</strong> To raise Elsie and Emma into whole, God-honouring, exceptional young women — grounded in Christ, rooted in their heritage, and equipped years ahead of their peers in character, capability, and confidence.</p><p><strong>Vision:</strong> That by the age of 16, each child has developed — across mind, body, and spirit — the foundation a typical young person does not reach until their early twenties. Not through pressure for its own sake, but through starting early, practising deliberately, and never coasting.</p>`},
+  {id:'philosophy',title:'Part 2 — Educational philosophy',confirm:false,body:`<p>We are students of principle: we ground every decision in original, authoritative research rather than popular opinion. Our thesis rests on Bloom (mastery learning), Ericsson (deliberate practice), Dweck (growth mindset), Mason (living education and narration), Montessori (prepared environment), and the Classical Trivium. The greatest evidenced risk in this programme is not too little academics but too much pressure — warmth and motivation are protected above all.</p>`},
+  {id:'engines',title:'Part 3 — The two engines',confirm:false,body:`<p>Olatoye Academy runs on two engines: the <strong>Core Engine</strong> (UK National Curriculum — rigour, credentials, every door stays open) and the <strong>Bespoke Engine</strong> (the nine Olatoye Pillars — our real edge). A child excellent on one engine alone is unfinished. Both are non-negotiable.</p>`},
+  {id:'curriculum',title:'Part 4 — The curriculum',confirm:false,body:`<p><strong>Core:</strong> Maths, English, Science, French, Digital/Tech/AI — delivered through tutoring, Kumon, structured programmes and quality online tools.</p><p><strong>Bespoke (nine pillars):</strong> Faith & Spiritual Formation · Heritage & Culture · Character, Etiquette & Confidence · Emotional Intelligence · Enterprise, Money & Legacy · Physical Excellence & Martial Discipline · Creativity, Music & Expression · Digital, Tech & AI · Winning Mindset & Strategy.</p>`},
+  {id:'standards',title:'Part 5 — Standards & assessment',confirm:true,confirmText:'Confirm exact year groups and current working levels per subject. Confirm exam roadmap and target dates. Book GL Assessment baseline now.',body:`<p>Our standard: <strong>"Exceeds" is the floor.</strong> Levels: Emerging → Meeting → Exceeding (our target) → Mastered.</p><p><strong>2027 target:</strong> Elsie working at Year 7 / KS3 level. Emma working at Year 2 / KS1 level. External benchmark: GL Assessment Progress Tests — baseline this month, re-test summer 2027.</p>`},
+  {id:'rhythm',title:'Part 6 — The weekly rhythm',confirm:true,confirmText:'Confirm fixed assembly time, weekly family meeting slot, and complete external activity schedule.',body:`<ul><li>Early rise (~7am) — discipline starts here</li><li>Family assembly & devotion (~30 min) — faith first, every day</li><li>Up to 3 focused sessions (30–60 min) Mon–Fri, 9am–1:15pm</li><li>Enrichment: Kumon, art, cheer, martial arts, music per schedule</li><li>Sundays: church and rest — no formal schooling</li></ul>`},
+  {id:'accountability',title:'Part 7 — Accountability & tracking',confirm:true,confirmText:'Confirm who owns dashboard upkeep. Confirm weekly review slot in both calendars.',body:`<p>The single most important upgrade this year: <strong>one place where everything can be seen.</strong> Review cadence: daily tick (did sessions happen?), weekly 20-min review, monthly milestone check, termly Open Day and reset. One named owner per role — not "we".</p>`},
+  {id:'provision',title:'Part 8 — Provision map',confirm:true,confirmText:'Complete with real provider names, costs, schedules, and the progress-report link for each.',body:`<p><strong>Active:</strong> Kumon (Maths + English), Kings (confirm subjects), tutoring, art club, cheer.</p><p><strong>To start:</strong> Martial arts, music instrument (Suzuki for Emma, formal tuition for Elsie), therapist/emotions coach.</p>`},
+  {id:'roles',title:'Part 11 — Roles & governance',confirm:true,confirmText:'Agree who holds each role at the 4 Aug review.',body:`<p><strong>Directors (joint):</strong> Bolaji & Funmi — vision, standards, major decisions, termly review.</p><p><strong>To assign:</strong> Head of Delivery (day-to-day teaching, timetable), Head of Systems (portal, dashboard, tracking), Faith & Culture lead (assembly, Bible curriculum, heritage ceremonies).</p>`},
+];
+
+const CORE_SUBJECTS=[
+  {sub:'Maths',elsie:'Year 5 → Year 7 target',emma:'Reception → Year 2 target',providers:'Kumon, tutoring, Khan Academy'},
+  {sub:'English',elsie:'Year 5 → Year 7 target',emma:'Systematic phonics + living books',providers:'Kumon, tutoring, reading programme'},
+  {sub:'Science',elsie:'KS2 → KS3 target',emma:'EYFS science play',providers:'Structured scheme + home experiments'},
+  {sub:'French',elsie:'Beginner → conversational',emma:'Not yet',providers:'Duolingo + workbooks'},
+  {sub:'Digital / Tech / AI',elsie:'Scratch → real projects',emma:'Play-based introduction',providers:'Scratch, Tynker, guided projects'},
+];
+
+const PILLARS=[
+  {n:1,name:'Faith & Spiritual Formation',icon:'ti-bible',elsie:'Catechism + scripture memory + honest discussion',emma:'Godly Play + short verses + songs',status:'active'},
+  {n:2,name:'Heritage & Culture',icon:'ti-globe',elsie:'Yoruba language + Nigerian history + family lineage',emma:'Daily immersion — songs, stories, customs',status:'active'},
+  {n:3,name:'Character, Etiquette & Confidence',icon:'ti-star',elsie:'Public speaking starting (TalkMaze trial to book), etiquette',emma:'Habits of courtesy and grace',status:'partial'},
+  {n:4,name:'Emotional Intelligence',icon:'ti-heart',elsie:'Emotion coaching, journalling, wellbeing check-ins',emma:'Emotion naming, self-regulation through play',status:'active'},
+  {n:5,name:'Enterprise, Money & Legacy',icon:'ti-building-bank',elsie:'Save/spend/give jars, real money choices, pitch writing',emma:'Delayed gratification and self-regulation',status:'partial'},
+  {n:6,name:'Physical Excellence & Martial Discipline',icon:'ti-shield',elsie:'Cheer (active) · Martial arts (to start)',emma:'Movement, active play, nutritional awareness',status:'partial'},
+  {n:7,name:'Creativity, Music & Expression',icon:'ti-music',elsie:'Art club (active) · Instrument (to start — formal tuition)',emma:'Creative play · Suzuki/ear-first music start',status:'partial'},
+  {n:8,name:'Digital, Tech & AI',icon:'ti-cpu',elsie:'Coding projects, AI literacy, content creation',emma:'Safe, play-based technology',status:'partial'},
+  {n:9,name:'Winning Mindset & Strategy',icon:'ti-trophy',elsie:'Competitions, rule-study, student-of-the-game mindset',emma:'Play-based persistence and follow-through',status:'partial'},
+];
+
+const PROVIDERS=[
+  {name:'Kumon',type:'Maths + English',who:'Elsie',freq:'Daily',status:'active',note:'Above-grade progression built in'},
+  {name:'Kings',type:'Online school — confirm subjects',who:'Elsie',freq:'Confirm',status:'confirm',note:'Confirm which subjects and timetable slot'},
+  {name:'Tutoring',type:'Core subjects',who:'Elsie',freq:'Weekly',status:'active',note:'One-to-one mastery model'},
+  {name:'Art Club',type:'Creativity — Pillar 7',who:'Elsie',freq:'Tue',status:'active',note:'Autumn term confirmed'},
+  {name:'Cheer',type:'Physical — Pillar 6',who:'Elsie',freq:'Weekly',status:'active',note:'Ongoing'},
+  {name:'TalkMaze',type:'Public speaking + debate — Pillar 3',who:'Elsie',freq:'Weekly',status:'tostart',note:'Trial to book this week'},
+  {name:'Martial arts',type:'Physical + Winning Mindset — Pillars 6 & 9',who:'Both',freq:'Weekly',status:'tostart',note:'Provider TBC'},
+  {name:'Music instrument',type:'Creativity — Pillar 7',who:'Both',freq:'Weekly',status:'tostart',note:'Suzuki for Emma · Formal tuition for Elsie'},
+  {name:'Therapist / emotions coach',type:'Emotional Intelligence — Pillar 4',who:'Both',freq:'Monthly',status:'tostart',note:'Part of core provision, not a last resort'},
+];
+
+const SCHEDULE={
+  Mon:[{time:'9:00',label:'Assembly & devotion',child:'both'},{time:'9:30',label:'Maths — Kumon',child:'elsie'},{time:'10:30',label:'English — reading + narration',child:'elsie'}],
+  Tue:[{time:'9:00',label:'Assembly & devotion',child:'both'},{time:'9:30',label:'Science',child:'elsie'},{time:'10:30',label:'French',child:'elsie'},{time:'12:15',label:'Art Club',child:'elsie'}],
+  Wed:[{time:'9:00',label:'Assembly & devotion',child:'both'},{time:'9:30',label:'Maths — Kumon',child:'elsie'},{time:'10:30',label:'Heritage & Yoruba',child:'both'}],
+  Thu:[{time:'9:00',label:'Assembly & devotion',child:'both'},{time:'9:30',label:'English — writing',child:'elsie'},{time:'10:30',label:'Digital / Tech / AI',child:'elsie'}],
+  Fri:[{time:'9:00',label:'Assembly & devotion',child:'both'},{time:'9:30',label:'Maths — Kumon',child:'elsie'},{time:'10:30',label:'Enterprise & money lesson',child:'elsie'}],
+};
+
+const CHILD_BADGE={elsie:'badge-purple',emma:'badge-gold',both:'badge-green'};
+
+let selectedScholars=new Set();
+let expandedSections=new Set();
+let editingSections=new Set();
+
+function nav(view){
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active',n.dataset.view===view);
+  });
+  const titles={dashboard:'Dashboard',prospectus:'Prospectus',scholars:'Schools of thought',curriculum:'Curriculum',schedule:'Schedule',resources:'Resources & plans'};
+  document.getElementById('topbar-title').textContent=titles[view]||view;
+  const c=document.getElementById('content');
+  c.innerHTML='';
+  if(view==='dashboard')renderDashboard(c);
+  else if(view==='prospectus')renderProspectus(c);
+  else if(view==='scholars')renderScholars(c);
+  else if(view==='curriculum')renderCurriculum(c);
+  else if(view==='schedule')renderSchedule(c);
+  else if(view==='resources')renderResources(c);
+}
+
+function renderDashboard(c){
+  c.innerHTML=`
+  <div class="page-header"><h2>Academy overview</h2><p>2026/27 · Year Two · Target: both children two years ahead by summer 2027</p></div>
+  <div class="grid-4" style="margin-bottom:16px">
+    <div class="metric"><div class="metric-label">Elsie — year group</div><div class="metric-value">Year 5</div><div class="metric-sub">Target: Year 7 level</div><div class="progress"><div class="progress-fill" style="width:40%"></div></div></div>
+    <div class="metric"><div class="metric-label">Emma — year group</div><div class="metric-value">Reception</div><div class="metric-sub">Target: Year 2 level</div><div class="progress"><div class="progress-fill" style="width:20%"></div></div></div>
+    <div class="metric"><div class="metric-label">Active provisions</div><div class="metric-value">6</div><div class="metric-sub">Kumon, Kings, Cheer + 3</div></div>
+    <div class="metric"><div class="metric-label">Pillars active</div><div class="metric-value">9 / 9</div><div class="metric-sub">All pillars in plan</div></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-gold" style="margin-bottom:14px">
+        <h3>Elsie's week at a glance</h3>
+        <div class="row-item"><div class="row-time">Mon–Fri</div><div class="row-label">Kumon Maths & English</div><span class="badge badge-green">Daily</span></div>
+        <div class="row-item"><div class="row-time">Tue</div><div class="row-label">Art Club</div><span class="badge badge-gold">Weekly</span></div>
+        <div class="row-item"><div class="row-time">TBC</div><div class="row-label">Public speaking / debate</div><span class="badge badge-amber">To start</span></div>
+        <div class="row-item"><div class="row-time">TBC</div><div class="row-label">Martial arts</div><span class="badge badge-amber">To start</span></div>
+      </div>
+      <div class="card card-purple">
+        <h3>Priority actions</h3>
+        <div class="row-item"><div class="row-label">Book TalkMaze trial — public speaking</div><span class="badge badge-red">This week</span></div>
+        <div class="row-item"><div class="row-label">Run GL Assessment baseline for both children</div><span class="badge badge-red">This week</span></div>
+        <div class="row-item"><div class="row-label">Complete TO CONFIRM blocks in prospectus</div><span class="badge badge-amber">4 Aug</span></div>
+        <div class="row-item"><div class="row-label">Set pillar milestones + stand up dashboard</div><span class="badge badge-amber">August</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-gold" style="margin-bottom:14px">
+        <h3>Emma's week at a glance</h3>
+        <div class="row-item"><div class="row-time">Daily</div><div class="row-label">Systematic phonics + read-alouds</div><span class="badge badge-green">Active</span></div>
+        <div class="row-item"><div class="row-time">Daily</div><div class="row-label">Yoruba language immersion</div><span class="badge badge-green">Active</span></div>
+        <div class="row-item"><div class="row-time">TBC</div><div class="row-label">Suzuki / ear-first music start</div><span class="badge badge-amber">To start</span></div>
+        <div class="row-item"><div class="row-time">TBC</div><div class="row-label">Montessori practical life</div><span class="badge badge-amber">To start</span></div>
+      </div>
+      <div class="card card-purple">
+        <h3>The one headline — evidence baseline</h3>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-top:4px">The strongest lever is not more academics — it is protecting <strong>warmth, play and the girls' own motivation</strong> while we stretch them. Acceleration is safe. Hothousing is the documented risk. The two-years-ahead goal is a target for provision and pace — never pressure on the child.</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderProspectus(c){
+  c.innerHTML=`<div class="page-header"><h2>Prospectus</h2><p>Living document · Updated each term · Click a section to expand or edit</p></div><div id="ps-list"></div>`;
+  drawProspectus();
+}
+
+function drawProspectus(){
+  const list=document.getElementById('ps-list');
+  if(!list)return;
+  list.innerHTML=PROSPECTUS.map(s=>`
+  <div class="prospectus-section">
+    <div class="ps-header" onclick="togglePS('${s.id}')">
+      <h3>${s.title}</h3>
+      <div class="ps-header-right">
+        ${s.confirm?`<span class="badge badge-amber">TO CONFIRM</span>`:`<span class="badge badge-green">Complete</span>`}
+        <i class="ti ${expandedSections.has(s.id)?'ti-chevron-up':'ti-chevron-down'}" style="font-size:14px;color:var(--text-muted)"></i>
+      </div>
+    </div>
+    ${expandedSections.has(s.id)?`<div class="ps-body" id="ps-body-${s.id}">
+      ${editingSections.has(s.id)?`
+        <textarea id="edit-${s.id}" rows="6" style="margin-bottom:8px">${s.body.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()}</textarea>
+        <div style="display:flex;gap:8px"><button class="btn btn-purple" onclick="savePS('${s.id}')">Save</button><button class="btn" onclick="cancelPS('${s.id}')">Cancel</button></div>
+      `:`
+        ${s.body}
+        ${s.confirm?`<div class="to-confirm-box"><strong>TO CONFIRM:</strong> ${s.confirmText}</div>`:''}
+        <div style="margin-top:10px"><span class="edit-link" onclick="editPS('${s.id}')"><i class="ti ti-edit" style="font-size:12px"></i> Edit this section</span></div>
+      `}
+    </div>`:''}
+  </div>`).join('');
+}
+
+function togglePS(id){expandedSections.has(id)?expandedSections.delete(id):expandedSections.add(id);drawProspectus();}
+function editPS(id){editingSections.add(id);drawProspectus();}
+function cancelPS(id){editingSections.delete(id);drawProspectus();}
+function savePS(id){
+  const s=PROSPECTUS.find(x=>x.id===id);
+  if(s){s.body='<p>'+document.getElementById('edit-'+id).value+'</p>';s.confirm=false;}
+  editingSections.delete(id);
+  drawProspectus();
+  setTimeout(()=>{
+    const b=document.getElementById('ps-body-'+id);
+    if(b){const f=document.createElement('div');f.className='confirm-flash';f.textContent='Saved. Connect Supabase to persist across sessions.';b.appendChild(f);setTimeout(()=>f.remove(),3500);}
+  },50);
+}
+
+function renderScholars(c){
+  c.innerHTML=`
+  <div class="page-header"><h2>Schools of thought</h2><p>Select scholars then pressure-test a decision against them</p></div>
+  <div class="grid-3" id="sg"></div>
+  <div class="ai-box" id="scholar-panel" style="display:none">
+    <h3>Pressure-test a decision</h3>
+    <textarea id="sq" rows="3" placeholder="Describe what you're planning — e.g. 'We want Elsie to skip Year 6 maths and go straight to Year 7. Is this safe?'"></textarea>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-purple" onclick="runPressureTest()"><i class="ti ti-brain"></i>Run pressure-test</button>
+      <button class="btn" onclick="clearScholars()">Clear selection</button>
+    </div>
+    <div class="divider"></div>
+    <div class="ai-output" id="scholar-out"><span class="ai-loading">Select scholars above and describe a decision to pressure-test.</span></div>
+  </div>`;
+  drawScholars();
+}
+
+function drawScholars(){
+  const g=document.getElementById('sg');
+  if(!g)return;
+  g.innerHTML=SCHOLARS.map(s=>`
+  <div class="scholar-card${selectedScholars.has(s.id)?' selected':''}" onclick="toggleScholar('${s.id}')">
+    <div class="scholar-name">${s.name}</div>
+    <div class="scholar-domain">${s.domain}</div>
+    <div style="margin-top:8px"><span class="badge ${STRENGTH_BADGE[s.strength]||'badge-gold'}">${s.strength}</span></div>
+    <div class="pill-row">${s.tags.map(t=>`<span class="pill">${t}</span>`).join('')}</div>
+  </div>`).join('');
+  const p=document.getElementById('scholar-panel');
+  if(p)p.style.display=selectedScholars.size>0?'block':'none';
+}
+
+function toggleScholar(id){selectedScholars.has(id)?selectedScholars.delete(id):selectedScholars.add(id);drawScholars();}
+function clearScholars(){selectedScholars.clear();drawScholars();}
+
+async function runPressureTest(){
+  const q=document.getElementById('sq').value.trim();
+  if(!q){document.getElementById('scholar-out').innerHTML='<span class="ai-loading" style="color:var(--red-text)">Describe a decision first.</span>';return;}
+  const names=SCHOLARS.filter(s=>selectedScholars.has(s.id)).map(s=>`${s.name} (${s.strength})`);
+  const out=document.getElementById('scholar-out');
+  out.innerHTML='<span class="ai-loading">Running pressure-test across '+names.join(', ')+'…</span>';
+  const prompt=`You are the Olatoye Academy control — a scholarly advisor grounded in: ${names.join(', ')}.
+
+The family home-educate two daughters in Kent, England: Elsie (Year 5, ~age 9, target Year 7 by summer 2027) and Emma (Reception, ~age 4). Their programme runs on the UK National Curriculum plus nine Olatoye Pillars (Faith, Heritage/Yoruba, Character, Emotional Intelligence, Enterprise, Physical/Martial, Creativity/Music, Digital/AI, Winning Mindset). Philosophy: big goals because of who you must become to reach them.
+
+Decision to pressure-test: "${q}"
+
+For each selected thinker/framework: (1) what they would ENDORSE, (2) what they would CAUTION against — 2-3 sentences each.
+Then give a clear VERDICT: adopt / adopt with adjustments / reconsider, with the single most important adjustment if needed. Be direct and practical.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    out.textContent=d.content?.filter(x=>x.type==='text').map(x=>x.text).join('')||'No response.';
+  }catch(e){out.innerHTML='<span style="color:var(--red-text);font-size:13px">Connection error — check your network.</span>';}
+}
+
+function renderCurriculum(c){
+  c.innerHTML=`
+  <div class="page-header"><h2>Curriculum</h2><p>Core engine (UK National Curriculum) and the nine Olatoye Pillars</p></div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="currTab(this,'core')">Core subjects</div>
+    <div class="tab" onclick="currTab(this,'pillars')">Olatoye pillars</div>
+    <div class="tab" onclick="currTab(this,'providers')">Providers</div>
+  </div>
+  <div id="curr-body"></div>`;
+  drawCurr('core');
+}
+
+function currTab(el,tab){
+  el.closest('.tab-bar').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  drawCurr(tab);
+}
+
+function drawCurr(tab){
+  const b=document.getElementById('curr-body');
+  if(!b)return;
+  if(tab==='core'){
+    b.innerHTML=`<div class="table-wrap"><table>
+      <thead><tr><th>Subject</th><th>Elsie — target</th><th>Emma — target</th><th>Providers / tools</th></tr></thead>
+      <tbody>${CORE_SUBJECTS.map(s=>`<tr><td style="font-weight:500">${s.sub}</td><td>${s.elsie}</td><td>${s.emma}</td><td style="color:var(--text-secondary)">${s.providers}</td></tr>`).join('')}</tbody>
+    </table></div>`;
+  } else if(tab==='pillars'){
+    b.innerHTML=`<div class="grid-3">${PILLARS.map(p=>`
+    <div class="card ${p.status==='active'?'card-gold':'card-purple'}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:28px;height:28px;border-radius:6px;background:var(--purple-light);display:flex;align-items:center;justify-content:center"><i class="ti ${p.icon}" style="font-size:15px;color:var(--purple)"></i></div>
+        <span class="badge ${p.status==='active'?'badge-green':p.status==='partial'?'badge-amber':'badge-red'}">${p.status==='active'?'Active':'Partial'}</span>
+      </div>
+      <h3 style="margin-bottom:6px">Pillar ${p.n} — ${p.name}</h3>
+      <p style="font-size:12px;margin-bottom:3px"><strong>Elsie:</strong> ${p.elsie}</p>
+      <p style="font-size:12px"><strong>Emma:</strong> ${p.emma}</p>
+    </div>`).join('')}</div>`;
+  } else {
+    const sbadge={active:'badge-green',confirm:'badge-amber',tostart:'badge-amber'};
+    const slabel={active:'Active',confirm:'Confirm',tostart:'To start'};
+    b.innerHTML=`<div class="grid-2">${PROVIDERS.map(p=>`
+    <div class="card">
+      <div class="provider-row" style="padding:0 0 10px;border-bottom:1px solid var(--border)">
+        <div class="provider-icon"><i class="ti ti-building-school"></i></div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:500">${p.name}</div><div style="font-size:12px;color:var(--text-secondary)">${p.type}</div></div>
+        <span class="badge ${sbadge[p.status]}">${slabel[p.status]}</span>
+      </div>
+      <div style="display:flex;gap:16px;padding-top:8px;font-size:12px;color:var(--text-secondary)">
+        <span><i class="ti ti-user" style="font-size:12px"></i> ${p.who}</span>
+        <span><i class="ti ti-clock" style="font-size:12px"></i> ${p.freq}</span>
+      </div>
+      ${p.note?`<p style="font-size:12px;color:var(--text-secondary);margin-top:8px;padding:6px 8px;background:var(--surface-1);border-radius:var(--radius)">${p.note}</p>`:''}
+    </div>`).join('')}</div>`;
+  }
+}
+
+function renderSchedule(c){
+  c.innerHTML=`
+  <div class="page-header"><h2>Schedule</h2><p>Weekly rhythm · Max 3 sessions per day · Sundays reserved for church and rest</p></div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="schedTab(this,'week')">This week</div>
+    <div class="tab" onclick="schedTab(this,'add')">Add session</div>
+  </div>
+  <div id="sched-body"></div>`;
+  drawSched('week');
+}
+
+function schedTab(el,tab){
+  el.closest('.tab-bar').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  drawSched(tab);
+}
+
+function drawSched(tab){
+  const b=document.getElementById('sched-body');
+  if(!b)return;
+  if(tab==='week'){
+    const days=['Mon','Tue','Wed','Thu','Fri'];
+    b.innerHTML=`<div class="grid-2">${days.map(d=>`
+    <div class="card">
+      <h3 style="margin-bottom:10px">${d}${d==='Tue'?' + Art Club':''}</h3>
+      ${(SCHEDULE[d]||[]).map(s=>`<div class="row-item"><div class="row-time">${s.time}</div><div class="row-label">${s.label}</div><span class="badge ${CHILD_BADGE[s.child]}">${s.child}</span></div>`).join('')}
+    </div>`).join('')}</div>
+    <div class="card" style="margin-top:14px;background:var(--purple-light);border-color:#C4B0DC">
+      <p style="font-size:13px;color:var(--purple)"><strong>Saturday & Sunday</strong> — Rest and church. No formal schooling. Protected.</p>
+    </div>`;
+  } else {
+    b.innerHTML=`
+    <div class="card" style="max-width:480px">
+      <h3 style="margin-bottom:14px">Add a session</h3>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div><label>Day</label><select id="nd"><option>Mon</option><option>Tue</option><option>Wed</option><option>Thu</option><option>Fri</option></select></div>
+        <div><label>Time</label><input type="text" id="nt" placeholder="e.g. 11:00"></div>
+        <div><label>Session label</label><input type="text" id="nl" placeholder="e.g. Maths — Year 6 fractions"></div>
+        <div><label>Child</label><select id="nc"><option value="elsie">Elsie</option><option value="emma">Emma</option><option value="both">Both</option></select></div>
+        <button class="btn btn-purple" style="width:100%" onclick="addSession()">Add to schedule</button>
+        <div id="sched-confirm"></div>
+      </div>
+    </div>`;
+  }
+}
+
+function addSession(){
+  const day=document.getElementById('nd').value;
+  const time=document.getElementById('nt').value.trim();
+  const label=document.getElementById('nl').value.trim();
+  const child=document.getElementById('nc').value;
+  const conf=document.getElementById('sched-confirm');
+  if(!time||!label){conf.innerHTML='<span style="color:var(--red-text);font-size:12px">Enter a time and a session label.</span>';return;}
+  if(!SCHEDULE[day])SCHEDULE[day]=[];
+  SCHEDULE[day].push({time,label,child});
+  conf.innerHTML='<div class="confirm-flash">Session added. Switch to "This week" to see it.</div>';
+  setTimeout(()=>{if(conf)conf.innerHTML='';},3500);
+}
+
+function renderResources(c){
+  c.innerHTML=`
+  <div class="page-header"><h2>Resources & plans</h2><p>Search for providers and resources, or generate a curriculum plan</p></div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="resTab(this,'search')">Find resources</div>
+    <div class="tab" onclick="resTab(this,'plan')">Generate a plan</div>
+  </div>
+  <div id="res-body"></div>`;
+  drawRes('search');
+}
+
+function resTab(el,tab){
+  el.closest('.tab-bar').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  drawRes(tab);
+}
+
+function drawRes(tab){
+  const b=document.getElementById('res-body');
+  if(!b)return;
+  if(tab==='search'){
+    b.innerHTML=`
+    <div style="max-width:560px">
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input type="text" id="rq" placeholder="e.g. online Yoruba classes for children UK, LAMDA public speaking grades" style="flex:1">
+        <button class="btn btn-purple" onclick="searchRes()"><i class="ti ti-search"></i>Search</button>
+      </div>
+      <div class="pill-row" style="margin-bottom:16px">
+        <span class="pill" style="cursor:pointer" onclick="quickSearch('public speaking debate online UK ages 9-11')">Public speaking</span>
+        <span class="pill" style="cursor:pointer" onclick="quickSearch('Yoruba language children UK diaspora online classes')">Yoruba classes</span>
+        <span class="pill" style="cursor:pointer" onclick="quickSearch('LAMDA graded exams public speaking children UK')">LAMDA exams</span>
+        <span class="pill" style="cursor:pointer" onclick="quickSearch('martial arts classes Kent children')">Martial arts Kent</span>
+        <span class="pill" style="cursor:pointer" onclick="quickSearch('Suzuki violin teacher Kent children beginners')">Suzuki teacher</span>
+        <span class="pill" style="cursor:pointer" onclick="quickSearch('GL Assessment Progress Test home education baseline UK')">GL Assessment</span>
+      </div>
+      <div id="res-out"><span style="font-size:13px;color:var(--text-muted)">Type a search or pick a quick option above.</span></div>
+    </div>`;
+  } else {
+    b.innerHTML=`
+    <div style="max-width:560px">
+      <div class="card" style="margin-bottom:16px">
+        <h3 style="margin-bottom:12px">Generate a plan</h3>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div><label>What do you need a plan for?</label>
+            <textarea id="pq" rows="3" placeholder="e.g. A 12-week public speaking progression for Elsie, starting from beginner level and building toward a LAMDA Grade 1 exam"></textarea></div>
+          <div><label>Which child?</label>
+            <select id="pc"><option value="Elsie (Year 5)">Elsie (Year 5)</option><option value="Emma (Reception)">Emma (Reception)</option><option value="both children">Both children</option></select></div>
+          <button class="btn btn-gold" onclick="genPlan()"><i class="ti ti-sparkles"></i>Generate plan</button>
+        </div>
+      </div>
+      <div class="ai-box" id="plan-panel" style="display:none">
+        <h3>Generated plan</h3>
+        <div class="ai-output" id="plan-out"></div>
+      </div>
+    </div>`;
+  }
+}
+
+function quickSearch(q){document.getElementById('rq').value=q;searchRes();}
+
+async function searchRes(){
+  const q=document.getElementById('rq').value.trim();
+  const out=document.getElementById('res-out');
+  if(!q){out.innerHTML='<span style="color:var(--red-text);font-size:12px">Enter a search first.</span>';return;}
+  out.innerHTML='<span class="ai-loading">Searching for resources…</span>';
+  const prompt=`You are a research assistant for Olatoye Academy, a structured home education programme in Kent, England for two daughters: Elsie (Year 5, ~age 9) and Emma (Reception, ~age 4). The programme covers the UK National Curriculum plus nine bespoke pillars including Faith, Heritage (Nigerian/Yoruba), Character/Public Speaking, Emotional Intelligence, Enterprise, Physical/Martial arts, Creativity/Music, Digital/AI, and Winning Mindset.
+
+Find and list the best current UK-accessible resources, providers or tools for: "${q}"
+
+For each: name, URL if known, what it is, who it suits (Elsie/Emma/both), cost indicator (free/paid/subscription), and a one-line reason it fits. List 4-6 specific, actionable results. Note explicitly if UK-based.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    out.innerHTML=`<div style="font-size:13px;line-height:1.75;color:var(--text-primary);white-space:pre-wrap">${d.content?.filter(x=>x.type==='text').map(x=>x.text).join('')||'No results.'}</div>`;
+  }catch(e){out.innerHTML='<span style="color:var(--red-text);font-size:13px">Connection error — check your network.</span>';}
+}
+
+async function genPlan(){
+  const q=document.getElementById('pq').value.trim();
+  const child=document.getElementById('pc').value;
+  const panel=document.getElementById('plan-panel');
+  const out=document.getElementById('plan-out');
+  panel.style.display='block';
+  if(!q){out.innerHTML='<span class="ai-loading" style="color:var(--red-text)">Describe what you need a plan for first.</span>';return;}
+  out.innerHTML='<span class="ai-loading">Generating plan…</span>';
+  const prompt=`You are a curriculum planning specialist for Olatoye Academy, a structured UK home education programme. Grounded in: Bloom's mastery learning, Ericsson's deliberate practice, Charlotte Mason's narration and living books, Vygotsky's ZPD scaffolding, Self-Determination Theory. Goal for 2026/27: children working two academic years ahead by summer 2027.
+
+Generate a structured, practical plan for ${child}: "${q}"
+
+Format: Overview (2-3 sentences) · Phase-by-phase or week-by-week progression with specific actionable steps · Success markers at each stage · Resources needed · Watch-outs. Ground it in the evidence: mastery before moving on, deliberate practice, retrieval, warmth over pressure.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    out.textContent=d.content?.filter(x=>x.type==='text').map(x=>x.text).join('')||'No plan generated.';
+  }catch(e){out.innerHTML='<span style="color:var(--red-text);font-size:13px">Connection error — check your network.</span>';}
+}
+
+document.querySelectorAll('.nav-item').forEach(n=>{
+  n.addEventListener('click',()=>nav(n.dataset.view));
+});
+nav('dashboard');
+</script>
+</body>
+</html>
